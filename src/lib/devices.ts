@@ -11,6 +11,9 @@ export type Device = {
   user_agent: string | null;
   last_seen_at: string;
   created_at: string;
+  os: string | null;
+  device_type: string;
+  is_pwa: boolean;
 };
 
 export function useDevices() {
@@ -19,7 +22,7 @@ export function useDevices() {
     queryFn: async (): Promise<Device[]> => {
       const { data, error } = await supabase
         .from("device_subscriptions")
-        .select("id, endpoint, device_name, platform, browser, user_agent, last_seen_at, created_at")
+        .select("id, endpoint, device_name, platform, browser, os, device_type, is_pwa, user_agent, last_seen_at, created_at")
         .order("last_seen_at", { ascending: false });
       if (error) throw error;
       return data ?? [];
@@ -76,5 +79,31 @@ export function useUpdateSettings() {
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["settings"] }),
+  });
+}
+
+export type PushLogEntry = {
+  id: string;
+  kind: string;
+  title: string;
+  body: string | null;
+  device_names: string[];
+  delivered: number;
+  failed: number;
+  created_at: string;
+};
+
+export function usePushLog(limit = 12) {
+  return useQuery({
+    queryKey: ["push-log", limit],
+    queryFn: async (): Promise<PushLogEntry[]> => {
+      const { data, error } = await supabase
+        .from("push_log")
+        .select("id, kind, title, body, device_names, delivered, failed, created_at")
+        .order("created_at", { ascending: false })
+        .limit(limit);
+      if (error) throw error;
+      return data ?? [];
+    },
   });
 }

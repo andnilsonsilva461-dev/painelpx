@@ -65,9 +65,12 @@ export type Database = {
           browser: string | null
           created_at: string
           device_name: string | null
+          device_type: string
           endpoint: string
           id: string
+          is_pwa: boolean
           last_seen_at: string
+          os: string | null
           p256dh: string
           platform: string | null
           updated_at: string
@@ -79,9 +82,12 @@ export type Database = {
           browser?: string | null
           created_at?: string
           device_name?: string | null
+          device_type?: string
           endpoint: string
           id?: string
+          is_pwa?: boolean
           last_seen_at?: string
+          os?: string | null
           p256dh: string
           platform?: string | null
           updated_at?: string
@@ -93,9 +99,12 @@ export type Database = {
           browser?: string | null
           created_at?: string
           device_name?: string | null
+          device_type?: string
           endpoint?: string
           id?: string
+          is_pwa?: boolean
           last_seen_at?: string
+          os?: string | null
           p256dh?: string
           platform?: string | null
           updated_at?: string
@@ -273,6 +282,45 @@ export type Database = {
         }
         Relationships: []
       }
+      push_log: {
+        Row: {
+          body: string | null
+          created_at: string
+          delivered: number
+          device_names: string[]
+          failed: number
+          id: string
+          kind: string
+          meeting_id: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          delivered?: number
+          device_names?: string[]
+          failed?: number
+          id?: string
+          kind?: string
+          meeting_id?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          delivered?: number
+          device_names?: string[]
+          failed?: number
+          id?: string
+          kind?: string
+          meeting_id?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       reminder_log: {
         Row: {
           id: string
@@ -343,7 +391,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      push_cron_status: { Args: never; Returns: Json }
     }
     Enums: {
       client_status: "aguardando" | "em_negociacao" | "cliente" | "perdido"

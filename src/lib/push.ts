@@ -36,26 +36,26 @@ export function isIOS() {
 /** Best-effort human labels for the device list. */
 export function describeDevice() {
   const ua = navigator.userAgent;
-  const browser = isStandalone()
-    ? "PWA"
-    : /edg\//i.test(ua)
-      ? "Edge"
-      : /opr\//i.test(ua)
-        ? "Opera"
-        : /firefox/i.test(ua)
-          ? "Firefox"
-          : /chrome/i.test(ua)
-            ? "Chrome"
-            : /safari/i.test(ua)
-              ? "Safari"
-              : "Navegador";
+  const pwa = isStandalone();
+
+  const browser = /edg\//i.test(ua)
+    ? "Microsoft Edge"
+    : /opr\//i.test(ua)
+      ? "Opera"
+      : /firefox/i.test(ua)
+        ? "Firefox"
+        : /chrome/i.test(ua)
+          ? "Chrome"
+          : /safari/i.test(ua)
+            ? "Safari"
+            : "Navegador";
 
   const platform = /android/i.test(ua)
     ? "Android"
     : /iphone|ipod/i.test(ua)
-      ? "iPhone"
+      ? "iOS"
       : /ipad/i.test(ua)
-        ? "iPad"
+        ? "iPadOS"
         : /macintosh|mac os/i.test(ua)
           ? "macOS"
           : /windows/i.test(ua)
@@ -64,10 +64,30 @@ export function describeDevice() {
               ? "Linux"
               : "Desconhecido";
 
-  const mobile = /android|iphone|ipod/i.test(ua);
-  const deviceName = mobile ? `Celular ${platform}` : platform === "macOS" ? "Mac" : `Computador ${platform}`;
+  let os = platform;
+  if (platform === "Windows") os = /windows nt 10|windows nt 11/i.test(ua) ? "Windows 10/11" : "Windows";
+  if (platform === "Android") {
+    const v = ua.match(/android\s([\d.]+)/i)?.[1];
+    os = v ? `Android ${v.split(".")[0]}` : "Android";
+  }
+  if (platform === "iOS" || platform === "iPadOS") {
+    const v = ua.match(/os\s(\d+)_/i)?.[1];
+    os = v ? `${platform} ${v}` : platform;
+  }
 
-  return { browser, platform, deviceName, mobile };
+  const mobile = /android|iphone|ipod/i.test(ua);
+  const tablet = /ipad/i.test(ua);
+  const deviceType: "desktop" | "mobile" | "pwa" = pwa ? "pwa" : mobile || tablet ? "mobile" : "desktop";
+
+  const deviceName = mobile
+    ? `Celular ${platform === "iOS" ? "iPhone" : "Android"}`
+    : tablet
+      ? "Tablet"
+      : platform === "macOS"
+        ? "Mac"
+        : `Computador ${platform}`;
+
+  return { browser, platform, os, deviceName, deviceType, isPwa: pwa, mobile };
 }
 
 async function getRegistration() {
@@ -106,10 +126,45 @@ export async function registerDevice(): Promise<boolean> {
       deviceName: info.deviceName,
       platform: info.platform,
       browser: info.browser,
+      os: info.os,
+      deviceType: info.deviceType,
+      isPwa: info.isPwa,
     },
   });
 
   return true;
+}
+
+/** Endpoint of this browser's current subscription, if any. */
+export async function currentEndpoint(): Promise<string | null> {
+  if (!pushSupported()) return null;
+  const reg = await navigator.serviceWorker.getRegistration(SW_PATH);
+  const sub = await reg?.pushManager.getSubscription();
+  return sub?.endpoint ?? null;
+}
+
+/** Live snapshot of the browser-side push stack, for the diagnostics panel. */
+export async function localDiagnostics() {
+  if (!pushSupported()) {
+    return {
+      supported: false,
+      permission: "unsupported" as const,
+      serviceWorker: false,
+      subscription: false,
+      endpoint: null as string | null,
+      standalone: isStandalone(),
+    };
+  }
+  const reg = await navigator.serviceWorker.getRegistration(SW_PATH);
+  const sub = await reg?.pushManager.getSubscription();
+  return {
+    supported: true,
+    permission: Notification.permission,
+    serviceWorker: Boolean(reg?.active ?? reg),
+    subscription: Boolean(sub),
+    endpoint: sub?.endpoint ?? null,
+    standalone: isStandalone(),
+  };
 }
 
 export type PushResult = "granted" | "denied" | "unsupported";
