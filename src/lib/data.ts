@@ -319,6 +319,9 @@ export function useRealtimeSync() {
       .on("postgres_changes", { event: "*", schema: "public", table: "device_subscriptions" }, () => {
         qc.invalidateQueries({ queryKey: ["devices"] });
       })
+      .on("postgres_changes", { event: "*", schema: "public", table: "push_log" }, () => {
+        qc.invalidateQueries({ queryKey: ["push-log"] });
+      })
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
