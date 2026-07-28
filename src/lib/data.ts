@@ -306,6 +306,16 @@ export function useRealtimeSync() {
       .on("postgres_changes", { event: "*", schema: "public", table: "notifications" }, () => {
         qc.invalidateQueries({ queryKey: ["notifications"] });
       })
+      .on("postgres_changes", { event: "*", schema: "public", table: "clients" }, () => {
+        qc.invalidateQueries({ queryKey: ["clients"] });
+        qc.invalidateQueries({ queryKey: ["meetings"] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "history_events" }, () => {
+        qc.invalidateQueries({ queryKey: ["timeline"] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "device_subscriptions" }, () => {
+        qc.invalidateQueries({ queryKey: ["devices"] });
+      })
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
