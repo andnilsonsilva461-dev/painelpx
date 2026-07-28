@@ -3,8 +3,7 @@ import { useMemo, useState } from "react";
 import { Search, Users } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useClients } from "@/lib/data";
-import { CLIENT_STATUS_LABEL, LEAD_SOURCE_LABEL, type ClientStatus } from "@/lib/domain";
-import { fmtDate } from "@/lib/dates";
+import { CLIENT_STATUS_LABEL, SOURCE_LABEL, type ClientStatus } from "@/lib/domain";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/clientes/")({
@@ -19,7 +18,7 @@ export const Route = createFileRoute("/_authenticated/clientes/")({
   component: ClientsPage,
 });
 
-const FILTERS: (ClientStatus | "todos")[] = ["todos", "aguardando", "agendado", "cliente", "perdido"];
+const FILTERS: (ClientStatus | "todos")[] = ["todos", "aguardando", "em_negociacao", "cliente", "perdido"];
 
 function ClientsPage() {
   const { data: clients } = useClients();
@@ -88,7 +87,7 @@ function ClientsPage() {
               <span className="truncate text-muted-foreground">{c.company ?? "—"}</span>
               <span className="tabular truncate text-muted-foreground">{c.phone ?? c.instagram ?? "—"}</span>
               <span className="truncate text-muted-foreground">
-                {c.source ? LEAD_SOURCE_LABEL[c.source] : "—"}
+                {c.source ? SOURCE_LABEL[c.source] : "—"}
               </span>
               <span className="text-muted-foreground">
                 <span className="rounded border border-border px-1.5 py-0.5 text-[11px]">
