@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
+  BellRing,
   CalendarDays,
   LayoutDashboard,
   ListChecks,
@@ -40,6 +41,7 @@ const NAV = [
   { to: "/clientes", label: "Clientes", icon: Users },
   { to: "/insights", label: "Insights", icon: BarChart3 },
   { to: "/modo-ligacao", label: "Modo ligação", icon: PhoneCall },
+  { to: "/configuracoes", label: "Notificações", icon: BellRing },
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {

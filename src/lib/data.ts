@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Client, Meeting, MeetingWithClient, MeetingStatus } from "./domain";
+import { DEFAULT_OFFSETS } from "./domain";
 
 const MEETING_SELECT = "*, client:clients(*)";
 
@@ -143,6 +144,7 @@ export type MeetingDraft = {
   status: MeetingStatus;
   notes?: string | null;
   reminderMinutes: number;
+  reminderOffsets?: number[];
 };
 
 export function useSaveMeeting() {
@@ -193,6 +195,7 @@ export function useSaveMeeting() {
         source: draft.source,
         notes: draft.notes ?? null,
         reminder_minutes: draft.reminderMinutes,
+        reminder_offsets: draft.reminderOffsets ?? DEFAULT_OFFSETS,
         reminder_fired: false,
       };
 
@@ -305,6 +308,16 @@ export function useRealtimeSync() {
       })
       .on("postgres_changes", { event: "*", schema: "public", table: "notifications" }, () => {
         qc.invalidateQueries({ queryKey: ["notifications"] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "clients" }, () => {
+        qc.invalidateQueries({ queryKey: ["clients"] });
+        qc.invalidateQueries({ queryKey: ["meetings"] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "history_events" }, () => {
+        qc.invalidateQueries({ queryKey: ["timeline"] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "device_subscriptions" }, () => {
+        qc.invalidateQueries({ queryKey: ["devices"] });
       })
       .subscribe();
     return () => {

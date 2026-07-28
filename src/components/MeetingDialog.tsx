@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { useSettings } from "@/lib/devices";
+import { cn } from "@/lib/utils";
 import { CalendarClock, Loader2, Trash2 } from "lucide-react";
 import {
   Dialog,
@@ -16,7 +18,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   DURATIONS,
-  REMINDERS,
+  REMINDER_OFFSETS,
+  DEFAULT_OFFSETS,
   SOURCES,
   SOURCE_LABEL,
   STATUSES,
@@ -47,13 +50,15 @@ const empty = {
 
 export function MeetingDialog({ open, onOpenChange, meeting, initialDate, compact }: Props) {
   const save = useSaveMeeting();
+  const { data: settings } = useSettings();
+  const defaults = settings?.default_reminder_offsets ?? DEFAULT_OFFSETS;
   const remove = useDeleteMeeting();
   const [form, setForm] = useState(empty);
   const [when, setWhen] = useState(() => fmtDateTimeInput(initialDate ?? new Date()));
   const [duration, setDuration] = useState("30");
   const [source, setSource] = useState<LeadSource>("live");
   const [status, setStatus] = useState<MeetingStatus>("agendada");
-  const [reminder, setReminder] = useState("15");
+  const [offsets, setOffsets] = useState<number[]>(DEFAULT_OFFSETS);
   const [expanded, setExpanded] = useState(!compact);
 
   useEffect(() => {
@@ -72,14 +77,14 @@ export function MeetingDialog({ open, onOpenChange, meeting, initialDate, compac
       setDuration(String(meeting.duration_minutes));
       setSource(meeting.source);
       setStatus(meeting.status);
-      setReminder(String(meeting.reminder_minutes));
+      setOffsets(meeting.reminder_offsets ?? DEFAULT_OFFSETS);
     } else {
       setForm(empty);
       setWhen(fmtDateTimeInput(initialDate ?? nextSlot()));
       setDuration("30");
       setSource("live");
       setStatus("agendada");
-      setReminder("15");
+      setOffsets(defaults);
     }
   }, [open, meeting, initialDate, compact]);
 
@@ -101,7 +106,8 @@ export function MeetingDialog({ open, onOpenChange, meeting, initialDate, compac
         source,
         status,
         notes: form.notes.trim().slice(0, 5000) || null,
-        reminderMinutes: Number(reminder),
+        reminderMinutes: offsets.length ? Math.min(...offsets.filter((o) => o > 0), 15) : 15,
+        reminderOffsets: offsets,
       });
       toast.success(meeting ? "Reunião atualizada" : "Reunião agendada");
       onOpenChange(false);
@@ -192,17 +198,35 @@ export function MeetingDialog({ open, onOpenChange, meeting, initialDate, compac
                     </SelectContent>
                   </Select>
                 </Field>
-                <Field label="Lembrete">
-                  <Select value={reminder} onValueChange={setReminder}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {REMINDERS.map((r) => (
-                        <SelectItem key={r.value} value={String(r.value)}>{r.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
               </div>
+              <Field label="Lembretes">
+                <div className="flex flex-wrap gap-1.5">
+                  {REMINDER_OFFSETS.map((r) => {
+                    const on = offsets.includes(r.value);
+                    return (
+                      <button
+                        key={r.value}
+                        type="button"
+                        onClick={() =>
+                          setOffsets((cur) =>
+                            cur.includes(r.value)
+                              ? cur.filter((o) => o !== r.value)
+                              : [...cur, r.value].sort((a, b) => b - a),
+                          )
+                        }
+                        className={cn(
+                          "rounded-md border px-2.5 py-1 text-[12px] transition-all duration-200",
+                          on
+                            ? "border-foreground/25 bg-elevated"
+                            : "border-border bg-surface hover:border-border-strong",
+                        )}
+                      >
+                        {r.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </Field>
             </>
           )}
 

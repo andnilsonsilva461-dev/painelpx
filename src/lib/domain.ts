@@ -59,6 +59,19 @@ export const REMINDERS = [
   { value: 1440, label: "24 horas antes" },
 ];
 
+/** Every reminder offset a meeting can carry, in minutes before the start. */
+export const REMINDER_OFFSETS = [
+  { value: 1440, label: "24 h antes", short: "24h" },
+  { value: 120, label: "2 h antes", short: "2h" },
+  { value: 60, label: "1 h antes", short: "1h" },
+  { value: 30, label: "30 min antes", short: "30m" },
+  { value: 15, label: "15 min antes", short: "15m" },
+  { value: 5, label: "5 min antes", short: "5m" },
+  { value: 0, label: "Na hora", short: "0" },
+];
+
+export const DEFAULT_OFFSETS = [1440, 60, 15, 0];
+
 export const EVENT_LABEL: Record<string, string> = {
   client_created: "Cliente criado",
   client_updated: "Cliente atualizado",
