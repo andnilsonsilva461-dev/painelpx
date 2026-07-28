@@ -14,7 +14,7 @@ import {
   YAxis,
 } from "recharts";
 import { useAllMeetings, useClients } from "@/lib/data";
-import { addDays, format, isSameDay, L, startOfWeek } from "@/lib/dates";
+import { addDays, format, L, startOfWeek } from "@/lib/dates";
 import { SOURCE_LABEL, STATUS_LABEL, type LeadSource, type MeetingStatus } from "@/lib/domain";
 
 export const Route = createFileRoute("/_authenticated/insights")({
