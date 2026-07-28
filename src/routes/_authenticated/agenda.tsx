@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/StatusBadge";
 import { MeetingDialog } from "@/components/MeetingDialog";
 import { RescheduleDialog } from "@/components/RescheduleDialog";
-import { useAllMeetings, useUpdateMeeting } from "@/lib/data";
+import { useAllMeetings, useUpdateMeetingStatus } from "@/lib/data";
 import { addDays, fmtTime, format, isSameDay, L, relativeDayLabel } from "@/lib/dates";
 import type { MeetingWithClient } from "@/lib/domain";
 
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/agenda")({
 
 function AgendaPage() {
   const { data: meetings } = useAllMeetings();
-  const update = useUpdateMeeting();
+  const update = useUpdateMeetingStatus();
   const [day, setDay] = useState(() => new Date());
   const [selected, setSelected] = useState<MeetingWithClient | null>(null);
   const [reschedule, setReschedule] = useState<MeetingWithClient | null>(null);
@@ -87,7 +87,7 @@ function AgendaPage() {
                   variant="ghost"
                   size="sm"
                   className="h-7 text-xs"
-                  onClick={() => update.mutate({ id: m.id, status: "confirmada" })}
+                  onClick={() => update.mutate({ meeting: m, status: "confirmada" })}
                 >
                   Confirmar
                 </Button>
@@ -99,7 +99,7 @@ function AgendaPage() {
                 variant="ghost"
                 size="sm"
                 className="h-7 text-xs"
-                onClick={() => update.mutate({ id: m.id, status: "realizada" })}
+                onClick={() => update.mutate({ meeting: m, status: "realizada" })}
               >
                 Realizada
               </Button>
