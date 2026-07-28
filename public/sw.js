@@ -20,7 +20,7 @@ self.addEventListener("push", (event) => {
     icon: "/icons/icon-192.png",
     badge: "/icons/badge-72.png",
     timestamp: Date.now(),
-    requireInteraction: data.requireInteraction ?? false,
+    requireInteraction: data.requireInteraction ?? true,
     data: { url: data.url || "/dashboard" },
   };
 
