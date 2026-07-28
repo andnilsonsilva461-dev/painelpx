@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { MeetingDialog } from "@/components/MeetingDialog";
 import { ReminderEngine } from "@/components/ReminderEngine";
+import { PushInstallPrompt } from "@/components/PushInstallPrompt";
 import { supabase } from "@/integrations/supabase/client";
 import { useAllMeetings, useClients, useNotifications, useRealtimeSync } from "@/lib/data";
 import { relativeDayLabel, fmtTime } from "@/lib/dates";
@@ -91,6 +92,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen w-full bg-background">
       <ReminderEngine />
+      <PushInstallPrompt />
 
       <aside className="sticky top-0 hidden h-screen w-[220px] shrink-0 flex-col border-r border-border bg-sidebar px-3 py-4 lg:flex">
         <Link to="/dashboard" className="mb-6 flex items-center gap-2 px-2">

@@ -12,11 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedModoLigacaoRouteImport } from './routes/_authenticated/modo-ligacao'
+import { Route as AuthenticatedInsightsRouteImport } from './routes/_authenticated/insights'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCalendarioRouteImport } from './routes/_authenticated/calendario'
 import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated/agenda'
 import { Route as AuthenticatedClientesIndexRouteImport } from './routes/_authenticated/clientes/index'
 import { Route as AuthenticatedClientesClientIdRouteImport } from './routes/_authenticated/clientes/$clientId'
+import { Route as ApiPublicHooksRemindersRouteImport } from './routes/api/public/hooks/reminders'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -31,6 +34,17 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedModoLigacaoRoute =
+  AuthenticatedModoLigacaoRouteImport.update({
+    id: '/modo-ligacao',
+    path: '/modo-ligacao',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedInsightsRoute = AuthenticatedInsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
@@ -59,6 +73,11 @@ const AuthenticatedClientesClientIdRoute =
     path: '/clientes/$clientId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicHooksRemindersRoute = ApiPublicHooksRemindersRouteImport.update({
+  id: '/api/public/hooks/reminders',
+  path: '/api/public/hooks/reminders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -66,8 +85,11 @@ export interface FileRoutesByFullPath {
   '/agenda': typeof AuthenticatedAgendaRoute
   '/calendario': typeof AuthenticatedCalendarioRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/insights': typeof AuthenticatedInsightsRoute
+  '/modo-ligacao': typeof AuthenticatedModoLigacaoRoute
   '/clientes/$clientId': typeof AuthenticatedClientesClientIdRoute
   '/clientes/': typeof AuthenticatedClientesIndexRoute
+  '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -75,8 +97,11 @@ export interface FileRoutesByTo {
   '/agenda': typeof AuthenticatedAgendaRoute
   '/calendario': typeof AuthenticatedCalendarioRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/insights': typeof AuthenticatedInsightsRoute
+  '/modo-ligacao': typeof AuthenticatedModoLigacaoRoute
   '/clientes/$clientId': typeof AuthenticatedClientesClientIdRoute
   '/clientes': typeof AuthenticatedClientesIndexRoute
+  '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,8 +111,11 @@ export interface FileRoutesById {
   '/_authenticated/agenda': typeof AuthenticatedAgendaRoute
   '/_authenticated/calendario': typeof AuthenticatedCalendarioRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/insights': typeof AuthenticatedInsightsRoute
+  '/_authenticated/modo-ligacao': typeof AuthenticatedModoLigacaoRoute
   '/_authenticated/clientes/$clientId': typeof AuthenticatedClientesClientIdRoute
   '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
+  '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,8 +125,11 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/calendario'
     | '/dashboard'
+    | '/insights'
+    | '/modo-ligacao'
     | '/clientes/$clientId'
     | '/clientes/'
+    | '/api/public/hooks/reminders'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -106,8 +137,11 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/calendario'
     | '/dashboard'
+    | '/insights'
+    | '/modo-ligacao'
     | '/clientes/$clientId'
     | '/clientes'
+    | '/api/public/hooks/reminders'
   id:
     | '__root__'
     | '/'
@@ -116,14 +150,18 @@ export interface FileRouteTypes {
     | '/_authenticated/agenda'
     | '/_authenticated/calendario'
     | '/_authenticated/dashboard'
+    | '/_authenticated/insights'
+    | '/_authenticated/modo-ligacao'
     | '/_authenticated/clientes/$clientId'
     | '/_authenticated/clientes/'
+    | '/api/public/hooks/reminders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicHooksRemindersRoute: typeof ApiPublicHooksRemindersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -148,6 +186,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/modo-ligacao': {
+      id: '/_authenticated/modo-ligacao'
+      path: '/modo-ligacao'
+      fullPath: '/modo-ligacao'
+      preLoaderRoute: typeof AuthenticatedModoLigacaoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/insights': {
+      id: '/_authenticated/insights'
+      path: '/insights'
+      fullPath: '/insights'
+      preLoaderRoute: typeof AuthenticatedInsightsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
@@ -184,6 +236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedClientesClientIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/hooks/reminders': {
+      id: '/api/public/hooks/reminders'
+      path: '/api/public/hooks/reminders'
+      fullPath: '/api/public/hooks/reminders'
+      preLoaderRoute: typeof ApiPublicHooksRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -191,6 +250,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgendaRoute: typeof AuthenticatedAgendaRoute
   AuthenticatedCalendarioRoute: typeof AuthenticatedCalendarioRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedInsightsRoute: typeof AuthenticatedInsightsRoute
+  AuthenticatedModoLigacaoRoute: typeof AuthenticatedModoLigacaoRoute
   AuthenticatedClientesClientIdRoute: typeof AuthenticatedClientesClientIdRoute
   AuthenticatedClientesIndexRoute: typeof AuthenticatedClientesIndexRoute
 }
@@ -199,6 +260,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAgendaRoute: AuthenticatedAgendaRoute,
   AuthenticatedCalendarioRoute: AuthenticatedCalendarioRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedInsightsRoute: AuthenticatedInsightsRoute,
+  AuthenticatedModoLigacaoRoute: AuthenticatedModoLigacaoRoute,
   AuthenticatedClientesClientIdRoute: AuthenticatedClientesClientIdRoute,
   AuthenticatedClientesIndexRoute: AuthenticatedClientesIndexRoute,
 }
@@ -210,6 +273,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicHooksRemindersRoute: ApiPublicHooksRemindersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
