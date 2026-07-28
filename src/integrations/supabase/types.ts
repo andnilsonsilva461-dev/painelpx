@@ -14,7 +14,217 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      clients: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string | null
+          id: string
+          instagram: string | null
+          name: string
+          notes: string | null
+          phone: string | null
+          source: Database["public"]["Enums"]["lead_source"]
+          status: Database["public"]["Enums"]["client_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          instagram?: string | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          source?: Database["public"]["Enums"]["lead_source"]
+          status?: Database["public"]["Enums"]["client_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          instagram?: string | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          source?: Database["public"]["Enums"]["lead_source"]
+          status?: Database["public"]["Enums"]["client_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      history_events: {
+        Row: {
+          client_id: string | null
+          created_at: string
+          description: string | null
+          event_type: string
+          id: string
+          meeting_id: string | null
+          metadata: Json
+          user_id: string
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string
+          description?: string | null
+          event_type: string
+          id?: string
+          meeting_id?: string | null
+          metadata?: Json
+          user_id: string
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string
+          description?: string | null
+          event_type?: string
+          id?: string
+          meeting_id?: string | null
+          metadata?: Json
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "history_events_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "history_events_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meetings: {
+        Row: {
+          client_id: string | null
+          created_at: string
+          duration_minutes: number
+          id: string
+          notes: string | null
+          reminder_fired: boolean
+          reminder_minutes: number
+          source: Database["public"]["Enums"]["lead_source"]
+          starts_at: string
+          status: Database["public"]["Enums"]["meeting_status"]
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          reminder_fired?: boolean
+          reminder_minutes?: number
+          source?: Database["public"]["Enums"]["lead_source"]
+          starts_at: string
+          status?: Database["public"]["Enums"]["meeting_status"]
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          reminder_fired?: boolean
+          reminder_minutes?: number
+          source?: Database["public"]["Enums"]["lead_source"]
+          starts_at?: string
+          status?: Database["public"]["Enums"]["meeting_status"]
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meetings_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          fire_at: string
+          id: string
+          meeting_id: string | null
+          message: string | null
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          fire_at?: string
+          id?: string
+          meeting_id?: string | null
+          message?: string | null
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          fire_at?: string
+          id?: string
+          meeting_id?: string | null
+          message?: string | null
+          read_at?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +233,21 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      client_status: "aguardando" | "em_negociacao" | "cliente" | "perdido"
+      lead_source:
+        | "live"
+        | "instagram"
+        | "whatsapp"
+        | "indicacao"
+        | "trafego_pago"
+        | "outro"
+      meeting_status:
+        | "agendada"
+        | "confirmada"
+        | "reagendada"
+        | "realizada"
+        | "nao_atendeu"
+        | "cancelada"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +374,24 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      client_status: ["aguardando", "em_negociacao", "cliente", "perdido"],
+      lead_source: [
+        "live",
+        "instagram",
+        "whatsapp",
+        "indicacao",
+        "trafego_pago",
+        "outro",
+      ],
+      meeting_status: [
+        "agendada",
+        "confirmada",
+        "reagendada",
+        "realizada",
+        "nao_atendeu",
+        "cancelada",
+      ],
+    },
   },
 } as const
