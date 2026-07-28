@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedModoLigacaoRouteImport } from './routes/_authenticated/modo-ligacao'
 import { Route as AuthenticatedInsightsRouteImport } from './routes/_authenticated/insights'
+import { Route as AuthenticatedDispositivosRouteImport } from './routes/_authenticated/dispositivos'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authenticated/configuracoes'
 import { Route as AuthenticatedCalendarioRouteImport } from './routes/_authenticated/calendario'
@@ -47,6 +48,12 @@ const AuthenticatedInsightsRoute = AuthenticatedInsightsRouteImport.update({
   path: '/insights',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDispositivosRoute =
+  AuthenticatedDispositivosRouteImport.update({
+    id: '/dispositivos',
+    path: '/dispositivos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -93,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/calendario': typeof AuthenticatedCalendarioRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/dispositivos': typeof AuthenticatedDispositivosRoute
   '/insights': typeof AuthenticatedInsightsRoute
   '/modo-ligacao': typeof AuthenticatedModoLigacaoRoute
   '/clientes/$clientId': typeof AuthenticatedClientesClientIdRoute
@@ -106,6 +114,7 @@ export interface FileRoutesByTo {
   '/calendario': typeof AuthenticatedCalendarioRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/dispositivos': typeof AuthenticatedDispositivosRoute
   '/insights': typeof AuthenticatedInsightsRoute
   '/modo-ligacao': typeof AuthenticatedModoLigacaoRoute
   '/clientes/$clientId': typeof AuthenticatedClientesClientIdRoute
@@ -121,6 +130,7 @@ export interface FileRoutesById {
   '/_authenticated/calendario': typeof AuthenticatedCalendarioRoute
   '/_authenticated/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/dispositivos': typeof AuthenticatedDispositivosRoute
   '/_authenticated/insights': typeof AuthenticatedInsightsRoute
   '/_authenticated/modo-ligacao': typeof AuthenticatedModoLigacaoRoute
   '/_authenticated/clientes/$clientId': typeof AuthenticatedClientesClientIdRoute
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/calendario'
     | '/configuracoes'
     | '/dashboard'
+    | '/dispositivos'
     | '/insights'
     | '/modo-ligacao'
     | '/clientes/$clientId'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/calendario'
     | '/configuracoes'
     | '/dashboard'
+    | '/dispositivos'
     | '/insights'
     | '/modo-ligacao'
     | '/clientes/$clientId'
@@ -163,6 +175,7 @@ export interface FileRouteTypes {
     | '/_authenticated/calendario'
     | '/_authenticated/configuracoes'
     | '/_authenticated/dashboard'
+    | '/_authenticated/dispositivos'
     | '/_authenticated/insights'
     | '/_authenticated/modo-ligacao'
     | '/_authenticated/clientes/$clientId'
@@ -212,6 +225,13 @@ declare module '@tanstack/react-router' {
       path: '/insights'
       fullPath: '/insights'
       preLoaderRoute: typeof AuthenticatedInsightsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dispositivos': {
+      id: '/_authenticated/dispositivos'
+      path: '/dispositivos'
+      fullPath: '/dispositivos'
+      preLoaderRoute: typeof AuthenticatedDispositivosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -271,6 +291,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCalendarioRoute: typeof AuthenticatedCalendarioRoute
   AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDispositivosRoute: typeof AuthenticatedDispositivosRoute
   AuthenticatedInsightsRoute: typeof AuthenticatedInsightsRoute
   AuthenticatedModoLigacaoRoute: typeof AuthenticatedModoLigacaoRoute
   AuthenticatedClientesClientIdRoute: typeof AuthenticatedClientesClientIdRoute
@@ -282,6 +303,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCalendarioRoute: AuthenticatedCalendarioRoute,
   AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDispositivosRoute: AuthenticatedDispositivosRoute,
   AuthenticatedInsightsRoute: AuthenticatedInsightsRoute,
   AuthenticatedModoLigacaoRoute: AuthenticatedModoLigacaoRoute,
   AuthenticatedClientesClientIdRoute: AuthenticatedClientesClientIdRoute,
