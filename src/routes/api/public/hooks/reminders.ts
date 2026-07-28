@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import { sendPush } from "@/lib/webpush.server";
 
-type Sub = { id: string; endpoint: string; p256dh: string; auth: string };
+type Sub = { id: string; endpoint: string; p256dh: string; auth: string; device_name: string | null };
 
 /**
  * Reminder sweep, called every minute by pg_cron.
@@ -29,7 +29,7 @@ export const Route = createFileRoute("/api/public/hooks/reminders")({
           if (cached) return cached;
           const { data } = await admin
             .from("device_subscriptions")
-            .select("id, endpoint, p256dh, auth")
+            .select("id, endpoint, p256dh, auth, device_name")
             .eq("user_id", userId);
           const list = (data ?? []) as Sub[];
           subsCache.set(userId, list);
@@ -39,20 +39,41 @@ export const Route = createFileRoute("/api/public/hooks/reminders")({
         async function deliver(
           userId: string,
           payload: { title: string; body: string; url: string; tag: string; requireInteraction?: boolean },
+          log: { kind: string; meetingId?: string | null },
         ) {
           const subs = await devicesFor(userId);
-          const results = await Promise.all(
+          const reached: string[] = [];
+          let failed = 0;
+
+          await Promise.all(
             subs.map(async (sub) => {
               try {
                 const ok = await sendPush({ endpoint: sub.endpoint, p256dh: sub.p256dh, auth: sub.auth }, payload);
-                if (!ok) await admin.from("device_subscriptions").delete().eq("id", sub.id);
-                return ok;
+                if (ok) reached.push(sub.device_name ?? "Dispositivo");
+                else {
+                  failed++;
+                  await admin.from("device_subscriptions").delete().eq("id", sub.id);
+                }
               } catch {
-                return false;
+                failed++;
               }
             }),
           );
-          return results.filter(Boolean).length;
+
+          if (subs.length) {
+            await admin.from("push_log").insert({
+              user_id: userId,
+              meeting_id: log.meetingId ?? null,
+              kind: log.kind,
+              title: payload.title,
+              body: payload.body,
+              device_names: reached,
+              delivered: reached.length,
+              failed,
+            });
+          }
+
+          return reached.length;
         }
 
         let delivered = 0;
@@ -101,7 +122,8 @@ export const Route = createFileRoute("/api/public/hooks/reminders")({
               url: `/agenda?m=${m.id}`,
               tag: `meeting-${m.id}-${off}`,
               requireInteraction: off <= 15,
-            });
+            },
+            { kind: "meeting", meetingId: m.id });
           }
         }
 
@@ -148,7 +170,8 @@ export const Route = createFileRoute("/api/public/hooks/reminders")({
             body,
             url: "/agenda",
             tag: kind,
-          });
+          },
+          { kind: "digest" });
         }
 
         return json({ ok: true, checked: meetings?.length ?? 0, due, delivered });
