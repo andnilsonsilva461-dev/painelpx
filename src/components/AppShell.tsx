@@ -8,6 +8,7 @@ import {
   Users,
   BarChart3,
   PhoneCall,
+  Radio,
   Plus,
   Search,
   Moon,
@@ -40,6 +41,7 @@ const NAV = [
   { to: "/calendario", label: "Calendário", icon: CalendarDays },
   { to: "/clientes", label: "Clientes", icon: Users },
   { to: "/insights", label: "Insights", icon: BarChart3 },
+  { to: "/prospeccao", label: "Prospecção", icon: Radio },
   { to: "/modo-ligacao", label: "Modo ligação", icon: PhoneCall },
   { to: "/configuracoes", label: "Notificações", icon: BellRing },
 ] as const;

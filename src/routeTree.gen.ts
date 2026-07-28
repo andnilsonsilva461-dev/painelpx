@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedProspeccaoRouteImport } from './routes/_authenticated/prospeccao'
 import { Route as AuthenticatedModoLigacaoRouteImport } from './routes/_authenticated/modo-ligacao'
 import { Route as AuthenticatedInsightsRouteImport } from './routes/_authenticated/insights'
 import { Route as AuthenticatedDispositivosRouteImport } from './routes/_authenticated/dispositivos'
@@ -36,6 +37,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedProspeccaoRoute = AuthenticatedProspeccaoRouteImport.update({
+  id: '/prospeccao',
+  path: '/prospeccao',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedModoLigacaoRoute =
   AuthenticatedModoLigacaoRouteImport.update({
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/dispositivos': typeof AuthenticatedDispositivosRoute
   '/insights': typeof AuthenticatedInsightsRoute
   '/modo-ligacao': typeof AuthenticatedModoLigacaoRoute
+  '/prospeccao': typeof AuthenticatedProspeccaoRoute
   '/clientes/$clientId': typeof AuthenticatedClientesClientIdRoute
   '/clientes/': typeof AuthenticatedClientesIndexRoute
   '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/dispositivos': typeof AuthenticatedDispositivosRoute
   '/insights': typeof AuthenticatedInsightsRoute
   '/modo-ligacao': typeof AuthenticatedModoLigacaoRoute
+  '/prospeccao': typeof AuthenticatedProspeccaoRoute
   '/clientes/$clientId': typeof AuthenticatedClientesClientIdRoute
   '/clientes': typeof AuthenticatedClientesIndexRoute
   '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/_authenticated/dispositivos': typeof AuthenticatedDispositivosRoute
   '/_authenticated/insights': typeof AuthenticatedInsightsRoute
   '/_authenticated/modo-ligacao': typeof AuthenticatedModoLigacaoRoute
+  '/_authenticated/prospeccao': typeof AuthenticatedProspeccaoRoute
   '/_authenticated/clientes/$clientId': typeof AuthenticatedClientesClientIdRoute
   '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
   '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
@@ -149,6 +158,7 @@ export interface FileRouteTypes {
     | '/dispositivos'
     | '/insights'
     | '/modo-ligacao'
+    | '/prospeccao'
     | '/clientes/$clientId'
     | '/clientes/'
     | '/api/public/hooks/reminders'
@@ -163,6 +173,7 @@ export interface FileRouteTypes {
     | '/dispositivos'
     | '/insights'
     | '/modo-ligacao'
+    | '/prospeccao'
     | '/clientes/$clientId'
     | '/clientes'
     | '/api/public/hooks/reminders'
@@ -178,6 +189,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dispositivos'
     | '/_authenticated/insights'
     | '/_authenticated/modo-ligacao'
+    | '/_authenticated/prospeccao'
     | '/_authenticated/clientes/$clientId'
     | '/_authenticated/clientes/'
     | '/api/public/hooks/reminders'
@@ -212,6 +224,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/prospeccao': {
+      id: '/_authenticated/prospeccao'
+      path: '/prospeccao'
+      fullPath: '/prospeccao'
+      preLoaderRoute: typeof AuthenticatedProspeccaoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/modo-ligacao': {
       id: '/_authenticated/modo-ligacao'
@@ -294,6 +313,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDispositivosRoute: typeof AuthenticatedDispositivosRoute
   AuthenticatedInsightsRoute: typeof AuthenticatedInsightsRoute
   AuthenticatedModoLigacaoRoute: typeof AuthenticatedModoLigacaoRoute
+  AuthenticatedProspeccaoRoute: typeof AuthenticatedProspeccaoRoute
   AuthenticatedClientesClientIdRoute: typeof AuthenticatedClientesClientIdRoute
   AuthenticatedClientesIndexRoute: typeof AuthenticatedClientesIndexRoute
 }
@@ -306,6 +326,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDispositivosRoute: AuthenticatedDispositivosRoute,
   AuthenticatedInsightsRoute: AuthenticatedInsightsRoute,
   AuthenticatedModoLigacaoRoute: AuthenticatedModoLigacaoRoute,
+  AuthenticatedProspeccaoRoute: AuthenticatedProspeccaoRoute,
   AuthenticatedClientesClientIdRoute: AuthenticatedClientesClientIdRoute,
   AuthenticatedClientesIndexRoute: AuthenticatedClientesIndexRoute,
 }
