@@ -291,7 +291,7 @@ export function useUpdateProspect() {
           .eq("id", row.client_id);
       }
       if (row.client_id) {
-        const patch: Record<string, unknown> = {};
+        const patch: Database["public"]["Tables"]["clients"]["Update"] = {};
         if (values.name) patch.name = values.name;
         if ("phone" in values) patch.phone = values.phone ?? null;
         if ("company" in values) patch.company = values.company ?? null;
