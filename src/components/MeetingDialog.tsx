@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { useSettings } from "@/lib/devices";
+import { cn } from "@/lib/utils";
 import { CalendarClock, Loader2, Trash2 } from "lucide-react";
 import {
   Dialog,
@@ -16,7 +18,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   DURATIONS,
-  REMINDERS,
+  REMINDER_OFFSETS,
+  DEFAULT_OFFSETS,
   SOURCES,
   SOURCE_LABEL,
   STATUSES,
@@ -47,6 +50,8 @@ const empty = {
 
 export function MeetingDialog({ open, onOpenChange, meeting, initialDate, compact }: Props) {
   const save = useSaveMeeting();
+  const { data: settings } = useSettings();
+  const defaults = settings?.default_reminder_offsets ?? DEFAULT_OFFSETS;
   const remove = useDeleteMeeting();
   const [form, setForm] = useState(empty);
   const [when, setWhen] = useState(() => fmtDateTimeInput(initialDate ?? new Date()));
