@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Bell, Download, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { enablePush, pushSupported, useSilentPushSync } from "@/lib/push";
+import { enablePush, pushSupported, useDeviceSync } from "@/lib/push";
 
 type Prompt = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
 
@@ -12,7 +12,7 @@ type Prompt = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outco
  * Never nags — dismissals are remembered.
  */
 export function PushInstallPrompt() {
-  useSilentPushSync();
+  useDeviceSync();
   const [needPush, setNeedPush] = useState(false);
   const [installEvent, setInstallEvent] = useState<Prompt | null>(null);
   const [busy, setBusy] = useState(false);
