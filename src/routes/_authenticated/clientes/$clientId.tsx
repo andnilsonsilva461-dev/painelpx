@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/StatusBadge";
 import { MeetingDialog } from "@/components/MeetingDialog";
 import { useClient, useClientMeetings, useTimeline, useUpdateClient } from "@/lib/data";
-import { CLIENT_STATUS_LABEL, CLIENT_STATUSES, SOURCE_LABEL, type MeetingWithClient } from "@/lib/domain";
-import { fmtDateTime, relativeDayLabel } from "@/lib/dates";
+import { CLIENT_STATUS_LABEL, SOURCE_LABEL, type ClientStatus, type MeetingWithClient } from "@/lib/domain";
+import { fmtDay, fmtTime, relativeDayLabel } from "@/lib/dates";
 import {
   Select,
   SelectContent,
@@ -92,13 +92,13 @@ function ClientDetail() {
 
         <Select
           value={client.status}
-          onValueChange={(v) => updateClient.mutate({ id: client.id, status: v as typeof client.status })}
+          onValueChange={(v) => updateClient.mutate({ id: client.id, values: { status: v as ClientStatus } })}
         >
           <SelectTrigger className="h-8 w-[150px] text-xs">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {CLIENT_STATUSES.map((s) => (
+            {(Object.keys(CLIENT_STATUS_LABEL) as ClientStatus[]).map((s) => (
               <SelectItem key={s} value={s} className="text-xs">
                 {CLIENT_STATUS_LABEL[s]}
               </SelectItem>
@@ -126,7 +126,7 @@ function ClientDetail() {
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[13px]">{m.title || "Reunião"}</p>
                   <p className="tabular truncate text-[11px] text-muted-foreground">
-                    {fmtDateTime(m.starts_at)} · {m.duration_minutes} min
+                    {fmtDay(m.starts_at)} {fmtTime(m.starts_at)} · {m.duration_minutes} min
                   </p>
                 </div>
                 <StatusBadge status={m.status} />
@@ -148,7 +148,7 @@ function ClientDetail() {
             {(timeline ?? []).map((e) => (
               <li key={e.id} className="relative pl-4">
                 <span className="absolute left-0 top-1.5 size-1.5 rounded-full bg-accent" />
-                <p className="text-[12px] leading-snug">{e.description ?? e.type}</p>
+                <p className="text-[12px] leading-snug">{e.description ?? e.event_type}</p>
                 <p className="mt-0.5 text-[10px] text-muted-foreground">{relativeDayLabel(e.created_at)}</p>
               </li>
             ))}
@@ -160,7 +160,7 @@ function ClientDetail() {
       </div>
 
       <MeetingDialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)} meeting={selected} />
-      <MeetingDialog open={creating} onOpenChange={setCreating} presetClientId={client.id} />
+      <MeetingDialog open={creating} onOpenChange={setCreating}  />
     </div>
   );
 }
