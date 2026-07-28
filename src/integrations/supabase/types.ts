@@ -161,6 +161,39 @@ export type Database = {
           },
         ]
       }
+      live_sessions: {
+        Row: {
+          created_at: string
+          ended_at: string | null
+          goal: number
+          id: string
+          started_at: string
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          ended_at?: string | null
+          goal?: number
+          id?: string
+          started_at?: string
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          ended_at?: string | null
+          goal?: number
+          id?: string
+          started_at?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       meetings: {
         Row: {
           client_id: string | null
@@ -282,6 +315,82 @@ export type Database = {
         }
         Relationships: []
       }
+      prospects: {
+        Row: {
+          callback_at: string | null
+          client_id: string | null
+          company: string | null
+          created_at: string
+          id: string
+          instagram: string | null
+          meeting_id: string | null
+          name: string
+          notes: string | null
+          outcome: Database["public"]["Enums"]["prospect_outcome"]
+          phone: string | null
+          session_id: string | null
+          source: Database["public"]["Enums"]["lead_source"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          callback_at?: string | null
+          client_id?: string | null
+          company?: string | null
+          created_at?: string
+          id?: string
+          instagram?: string | null
+          meeting_id?: string | null
+          name: string
+          notes?: string | null
+          outcome?: Database["public"]["Enums"]["prospect_outcome"]
+          phone?: string | null
+          session_id?: string | null
+          source?: Database["public"]["Enums"]["lead_source"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          callback_at?: string | null
+          client_id?: string | null
+          company?: string | null
+          created_at?: string
+          id?: string
+          instagram?: string | null
+          meeting_id?: string | null
+          name?: string
+          notes?: string | null
+          outcome?: Database["public"]["Enums"]["prospect_outcome"]
+          phone?: string | null
+          session_id?: string | null
+          source?: Database["public"]["Enums"]["lead_source"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prospects_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prospects_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prospects_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "live_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       push_log: {
         Row: {
           body: string | null
@@ -361,6 +470,7 @@ export type Database = {
           created_at: string
           daily_digest: boolean
           daily_digest_hour: number
+          daily_prospect_goal: number
           default_reminder_offsets: number[]
           timezone: string
           updated_at: string
@@ -370,6 +480,7 @@ export type Database = {
           created_at?: string
           daily_digest?: boolean
           daily_digest_hour?: number
+          daily_prospect_goal?: number
           default_reminder_offsets?: number[]
           timezone?: string
           updated_at?: string
@@ -379,6 +490,7 @@ export type Database = {
           created_at?: string
           daily_digest?: boolean
           daily_digest_hour?: number
+          daily_prospect_goal?: number
           default_reminder_offsets?: number[]
           timezone?: string
           updated_at?: string
@@ -409,6 +521,16 @@ export type Database = {
         | "realizada"
         | "nao_atendeu"
         | "cancelada"
+      prospect_outcome:
+        | "pendente"
+        | "agendou"
+        | "ligar_depois"
+        | "nao_atendeu"
+        | "sem_interesse"
+        | "vai_pensar"
+        | "virou_cliente"
+        | "numero_errado"
+        | "sem_whatsapp"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -552,6 +674,17 @@ export const Constants = {
         "realizada",
         "nao_atendeu",
         "cancelada",
+      ],
+      prospect_outcome: [
+        "pendente",
+        "agendou",
+        "ligar_depois",
+        "nao_atendeu",
+        "sem_interesse",
+        "vai_pensar",
+        "virou_cliente",
+        "numero_errado",
+        "sem_whatsapp",
       ],
     },
   },
