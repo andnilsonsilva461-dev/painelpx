@@ -2,9 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import { sendPush } from "@/lib/webpush.server";
 
+type Sub = { id: string; endpoint: string; p256dh: string; auth: string };
+
 /**
- * Reminder sweep. Called every minute by a scheduled job (pg_cron -> pg_net).
- * Runs entirely server-side: reminders fire whether or not the app is open.
+ * Reminder sweep, called every minute by pg_cron.
+ * Fully server-side: reminders fire even with every device closed.
  */
 export const Route = createFileRoute("/api/public/hooks/reminders")({
   server: {
@@ -20,78 +22,136 @@ export const Route = createFileRoute("/api/public/hooks/reminders")({
         });
 
         const now = new Date();
-        const horizon = new Date(now.getTime() + 25 * 60 * 60 * 1000);
+        const subsCache = new Map<string, Sub[]>();
 
+        async function devicesFor(userId: string) {
+          const cached = subsCache.get(userId);
+          if (cached) return cached;
+          const { data } = await admin
+            .from("device_subscriptions")
+            .select("id, endpoint, p256dh, auth")
+            .eq("user_id", userId);
+          const list = (data ?? []) as Sub[];
+          subsCache.set(userId, list);
+          return list;
+        }
+
+        async function deliver(
+          userId: string,
+          payload: { title: string; body: string; url: string; tag: string; requireInteraction?: boolean },
+        ) {
+          const subs = await devicesFor(userId);
+          const results = await Promise.all(
+            subs.map(async (sub) => {
+              try {
+                const ok = await sendPush({ endpoint: sub.endpoint, p256dh: sub.p256dh, auth: sub.auth }, payload);
+                if (!ok) await admin.from("device_subscriptions").delete().eq("id", sub.id);
+                return ok;
+              } catch {
+                return false;
+              }
+            }),
+          );
+          return results.filter(Boolean).length;
+        }
+
+        let delivered = 0;
+        let due = 0;
+
+        // ---- 1. per-meeting reminders -------------------------------------
         const { data: meetings, error } = await admin
           .from("meetings")
           .select("id, user_id, title, starts_at, reminder_offsets, status, clients(name)")
           .gte("starts_at", new Date(now.getTime() - 5 * 60 * 1000).toISOString())
-          .lte("starts_at", horizon.toISOString())
+          .lte("starts_at", new Date(now.getTime() + 25 * 60 * 60 * 1000).toISOString())
           .in("status", ["agendada", "confirmada", "reagendada"]);
 
         if (error) return json({ error: "query_failed" }, 500);
 
-        const due: { userId: string; meetingId: string; offset: number; name: string; startsAt: string }[] = [];
-
         for (const m of meetings ?? []) {
           const start = new Date(m.starts_at).getTime();
           const offsets: number[] = m.reminder_offsets ?? [];
-          const name =
-            (m as unknown as { clients?: { name?: string } | null }).clients?.name ?? m.title ?? "Cliente";
+          const name = (m as unknown as { clients?: { name?: string } | null }).clients?.name ?? m.title ?? "Cliente";
 
           for (const off of offsets) {
-            const fireAt = start - off * 60 * 1000;
-            const diff = now.getTime() - fireAt;
-            // fire inside a 2-minute window after the target moment
-            if (diff >= 0 && diff < 2 * 60 * 1000) {
-              due.push({ userId: m.user_id, meetingId: m.id, offset: off, name, startsAt: m.starts_at });
-            }
+            const diff = now.getTime() - (start - off * 60 * 1000);
+            if (diff < 0 || diff >= 2 * 60 * 1000) continue; // 2-minute firing window
+            due++;
+
+            const { error: dup } = await admin.from("reminder_log").insert({
+              user_id: m.user_id,
+              meeting_id: m.id,
+              kind: "meeting",
+              offset_minutes: off,
+            });
+            if (dup) continue; // already sent
+
+            const body = offsetLabel(off, name);
+
+            await admin.from("notifications").insert({
+              user_id: m.user_id,
+              meeting_id: m.id,
+              title: "Lembrete de reunião",
+              message: body,
+            });
+
+            delivered += await deliver(m.user_id, {
+              title: "🔔 Reunião",
+              body,
+              url: `/agenda?m=${m.id}`,
+              tag: `meeting-${m.id}-${off}`,
+              requireInteraction: off <= 15,
+            });
           }
         }
 
-        let delivered = 0;
+        // ---- 2. daily digest ----------------------------------------------
+        const { data: settings } = await admin
+          .from("user_settings")
+          .select("user_id, daily_digest, daily_digest_hour, timezone")
+          .eq("daily_digest", true);
 
-        for (const item of due) {
-          const { error: logError } = await admin.from("reminder_log").insert({
-            user_id: item.userId,
-            meeting_id: item.meetingId,
-            kind: "meeting",
-            offset_minutes: item.offset,
+        for (const s of settings ?? []) {
+          const local = zoned(now, s.timezone);
+          if (local.hour !== s.daily_digest_hour || local.minute >= 2) continue;
+
+          const kind = `digest:${local.date}`;
+          const { error: dup } = await admin.from("reminder_log").insert({
+            user_id: s.user_id,
+            meeting_id: null,
+            kind,
           });
-          if (logError) continue; // already sent (unique index)
+          if (dup) continue;
 
-          const body = offsetLabel(item.offset, item.name);
+          const dayStart = new Date(now);
+          dayStart.setHours(0, 0, 0, 0);
+          const { count } = await admin
+            .from("meetings")
+            .select("id", { count: "exact", head: true })
+            .eq("user_id", s.user_id)
+            .gte("starts_at", dayStart.toISOString())
+            .lt("starts_at", new Date(dayStart.getTime() + 86400000).toISOString())
+            .in("status", ["agendada", "confirmada", "reagendada"]);
 
-          await admin.from("notifications").insert({
-            user_id: item.userId,
-            meeting_id: item.meetingId,
-            title: "Lembrete de reunião",
-            message: body,
+          if (!count) continue;
+          due++;
+
+          const body =
+            count === 1 ? "Você possui 1 reunião hoje." : `Você possui ${count} reuniões hoje.`;
+
+          await admin
+            .from("notifications")
+            .insert({ user_id: s.user_id, title: "Resumo do dia", message: body });
+
+          delivered += await deliver(s.user_id, {
+            title: "📅 Resumo do dia",
+            body,
+            url: "/agenda",
+            tag: kind,
           });
-
-          const { data: subs } = await admin
-            .from("push_subscriptions")
-            .select("endpoint, p256dh, auth")
-            .eq("user_id", item.userId);
-
-          for (const sub of subs ?? []) {
-            try {
-              const ok = await sendPush(sub, {
-                title: "🔔 Reunião",
-                body,
-                url: `/agenda?m=${item.meetingId}`,
-                tag: `meeting-${item.meetingId}-${item.offset}`,
-                requireInteraction: item.offset <= 15,
-              });
-              if (ok) delivered++;
-              else await admin.from("push_subscriptions").delete().eq("endpoint", sub.endpoint);
-            } catch {
-              /* keep going */
-            }
-          }
         }
 
-        return json({ ok: true, checked: meetings?.length ?? 0, due: due.length, delivered });
+        return json({ ok: true, checked: meetings?.length ?? 0, due, delivered });
       },
     },
   },
@@ -108,9 +168,29 @@ function offsetLabel(offset: number, name: string) {
   return `Sua reunião com ${name} é em ${d} ${d === 1 ? "dia" : "dias"}.`;
 }
 
+/** Hour/minute/date of `at` inside an IANA timezone. */
+function zoned(at: Date, timezone: string) {
+  try {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: timezone,
+      hour12: false,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).formatToParts(at);
+    const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "0";
+    return {
+      hour: Number(get("hour")) % 24,
+      minute: Number(get("minute")),
+      date: `${get("year")}-${get("month")}-${get("day")}`,
+    };
+  } catch {
+    return { hour: at.getUTCHours(), minute: at.getUTCMinutes(), date: at.toISOString().slice(0, 10) };
+  }
+}
+
 function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
+  return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
 }
