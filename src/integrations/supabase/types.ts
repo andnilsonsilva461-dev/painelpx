@@ -116,6 +116,7 @@ export type Database = {
           notes: string | null
           reminder_fired: boolean
           reminder_minutes: number
+          reminder_offsets: number[]
           source: Database["public"]["Enums"]["lead_source"]
           starts_at: string
           status: Database["public"]["Enums"]["meeting_status"]
@@ -131,6 +132,7 @@ export type Database = {
           notes?: string | null
           reminder_fired?: boolean
           reminder_minutes?: number
+          reminder_offsets?: number[]
           source?: Database["public"]["Enums"]["lead_source"]
           starts_at: string
           status?: Database["public"]["Enums"]["meeting_status"]
@@ -146,6 +148,7 @@ export type Database = {
           notes?: string | null
           reminder_fired?: boolean
           reminder_minutes?: number
+          reminder_offsets?: number[]
           source?: Database["public"]["Enums"]["lead_source"]
           starts_at?: string
           status?: Database["public"]["Enums"]["meeting_status"]
@@ -222,6 +225,104 @@ export type Database = {
           full_name?: string | null
           id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          updated_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reminder_log: {
+        Row: {
+          id: string
+          kind: string
+          meeting_id: string | null
+          offset_minutes: number | null
+          sent_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          kind: string
+          meeting_id?: string | null
+          offset_minutes?: number | null
+          sent_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          kind?: string
+          meeting_id?: string | null
+          offset_minutes?: number | null
+          sent_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reminder_log_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_settings: {
+        Row: {
+          created_at: string
+          daily_digest: boolean
+          daily_digest_hour: number
+          default_reminder_offsets: number[]
+          timezone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          daily_digest?: boolean
+          daily_digest_hour?: number
+          default_reminder_offsets?: number[]
+          timezone?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          daily_digest?: boolean
+          daily_digest_hour?: number
+          default_reminder_offsets?: number[]
+          timezone?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
