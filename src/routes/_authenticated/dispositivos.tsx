@@ -1,16 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Check, Pencil, Trash2, X } from "lucide-react";
+import { ArrowLeft, MonitorSmartphone, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useDevices, type Device } from "@/lib/devices";
-import { removeDeviceSubscription, renameDevice } from "@/lib/push.functions";
-import { describeDevice, useDeviceSync } from "@/lib/push";
-import { deviceIcon } from "./configuracoes";
-import { relativeDayLabel, fmtTime } from "@/lib/dates";
+import { DeviceCard, isOnline } from "@/components/DeviceCard";
+import { useDevices } from "@/lib/devices";
+import { currentEndpoint, registerDevice, useDeviceSync } from "@/lib/push";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/dispositivos")({
   head: () => ({
@@ -18,127 +16,122 @@ export const Route = createFileRoute("/_authenticated/dispositivos")({
       { title: "Meus dispositivos — Orbit" },
       {
         name: "description",
-        content: "Veja e gerencie todos os aparelhos que recebem lembretes de reuniões do Orbit.",
+        content:
+          "Veja todos os aparelhos registrados na sua conta, renomeie, remova e confirme quais recebem notificações Push.",
       },
       { property: "og:title", content: "Meus dispositivos — Orbit" },
-      { property: "og:description", content: "Controle quais aparelhos recebem seus lembretes." },
+      { property: "og:description", content: "Controle quais aparelhos recebem seus lembretes de reunião." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: DevicesPage,
 });
 
+const FILTERS = [
+  { id: "all", label: "Todos" },
+  { id: "online", label: "Online" },
+  { id: "desktop", label: "Desktop" },
+  { id: "mobile", label: "Mobile" },
+] as const;
+
 function DevicesPage() {
   useDeviceSync();
   const qc = useQueryClient();
   const { data: devices, isLoading } = useDevices();
-  const currentName = typeof navigator !== "undefined" ? describeDevice().deviceName : "";
+  const [endpoint, setEndpoint] = useState<string | null>(null);
+  const [filter, setFilter] = useState<(typeof FILTERS)[number]["id"]>("all");
+  const [syncing, setSyncing] = useState(false);
+
+  useEffect(() => {
+    currentEndpoint().then(setEndpoint).catch(() => undefined);
+  }, [devices?.length]);
+
+  const list = useMemo(() => {
+    if (!devices) return [];
+    if (filter === "online") return devices.filter((d) => isOnline(d.last_seen_at));
+    if (filter === "desktop") return devices.filter((d) => d.device_type === "desktop");
+    if (filter === "mobile") return devices.filter((d) => d.device_type !== "desktop");
+    return devices;
+  }, [devices, filter]);
+
+  async function sync() {
+    setSyncing(true);
+    try {
+      const ok = await registerDevice();
+      qc.invalidateQueries({ queryKey: ["devices"] });
+      toast[ok ? "success" : "error"](
+        ok ? "Este dispositivo foi sincronizado" : "Ative as notificações neste aparelho primeiro",
+      );
+    } catch {
+      toast.error("Não foi possível sincronizar");
+    } finally {
+      setSyncing(false);
+    }
+  }
+
+  const onlineCount = devices?.filter((d) => isOnline(d.last_seen_at)).length ?? 0;
 
   return (
-    <div className="mx-auto w-full max-w-[820px] px-4 py-8 sm:px-6 lg:py-12">
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-        <h1 className="text-2xl font-medium">Meus dispositivos</h1>
+    <div className="mx-auto w-full max-w-[880px] px-4 pb-24 pt-8 sm:px-6 lg:pt-12">
+      <motion.header
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <Link
+          to="/configuracoes"
+          className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="size-3" /> Notificações
+        </Link>
+        <h1 className="mt-2 text-2xl font-medium">Meus dispositivos</h1>
         <p className="mt-1.5 text-[13px] text-muted-foreground">
-          Cada aparelho em que você ativar as notificações aparece aqui automaticamente.
+          Cada aparelho em que você ativar as notificações é registrado automaticamente — {devices?.length ?? 0} no
+          total, {onlineCount} online agora.
         </p>
-      </motion.div>
+      </motion.header>
 
-      <div className="panel mt-6 divide-y divide-border overflow-hidden">
-        {isLoading && <p className="px-5 py-10 text-center text-[11px] text-muted-foreground">Carregando…</p>}
-        {!isLoading && !devices?.length && (
-          <p className="px-5 py-10 text-center text-[11px] text-muted-foreground">
-            Nenhum dispositivo conectado ainda.
-          </p>
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-1.5">
+          {FILTERS.map((f) => (
+            <button
+              key={f.id}
+              onClick={() => setFilter(f.id)}
+              className={cn(
+                "rounded-md border px-3 py-1.5 text-[12px] transition-all duration-200 active:scale-[0.97]",
+                filter === f.id
+                  ? "border-foreground/25 bg-elevated"
+                  : "border-border bg-surface text-muted-foreground hover:border-border-strong hover:text-foreground",
+              )}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <Button size="sm" variant="outline" className="h-8 gap-1.5 text-[11px]" onClick={sync} disabled={syncing}>
+          <RefreshCw className={cn("size-3", syncing && "animate-spin")} />
+          Sincronizar este aparelho
+        </Button>
+      </div>
+
+      <div className="mt-4 grid gap-3">
+        {isLoading && (
+          <p className="panel px-5 py-12 text-center text-[11px] text-muted-foreground">Carregando dispositivos…</p>
         )}
-        {devices?.map((d) => (
-          <Row key={d.id} device={d} current={d.device_name === currentName} qc={qc} />
+        {!isLoading && !list.length && (
+          <div className="panel flex flex-col items-center gap-3 px-5 py-14 text-center">
+            <MonitorSmartphone className="size-6 text-muted-foreground" />
+            <p className="text-[13px]">Nenhum dispositivo nesta visão</p>
+            <p className="max-w-[320px] text-[11px] text-muted-foreground">
+              Abra o Orbit em outro aparelho e permita as notificações — ele aparecerá aqui automaticamente.
+            </p>
+          </div>
+        )}
+        {list.map((device, i) => (
+          <DeviceCard key={device.id} device={device} current={device.endpoint === endpoint} index={i} />
         ))}
       </div>
-    </div>
-  );
-}
-
-function Row({
-  device,
-  current,
-  qc,
-}: {
-  device: Device;
-  current: boolean;
-  qc: ReturnType<typeof useQueryClient>;
-}) {
-  const Icon = deviceIcon(device.platform);
-  const [editing, setEditing] = useState(false);
-  const [name, setName] = useState(device.device_name ?? "");
-
-  async function save() {
-    if (!name.trim()) return setEditing(false);
-    try {
-      await renameDevice({ data: { id: device.id, name: name.trim() } });
-      qc.invalidateQueries({ queryKey: ["devices"] });
-      setEditing(false);
-      toast.success("Nome atualizado");
-    } catch {
-      toast.error("Não foi possível renomear");
-    }
-  }
-
-  async function remove() {
-    try {
-      await removeDeviceSubscription({ data: { id: device.id } });
-      qc.invalidateQueries({ queryKey: ["devices"] });
-      toast.success("Dispositivo removido");
-    } catch {
-      toast.error("Não foi possível remover");
-    }
-  }
-
-  return (
-    <div className="row-hover flex items-center gap-3 px-5 py-4">
-      <Icon className="size-4 shrink-0 text-muted-foreground" />
-      <div className="min-w-0 flex-1">
-        {editing ? (
-          <div className="flex items-center gap-2">
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && save()}
-              autoFocus
-              className="h-7 max-w-[240px] text-[13px]"
-            />
-            <Button size="icon" variant="ghost" className="size-7" onClick={save}>
-              <Check className="size-3.5" />
-            </Button>
-            <Button size="icon" variant="ghost" className="size-7" onClick={() => setEditing(false)}>
-              <X className="size-3.5" />
-            </Button>
-          </div>
-        ) : (
-          <p className="truncate text-[13px]">
-            {device.device_name ?? "Dispositivo"}
-            {current && <span className="ml-2 text-[10px] text-muted-foreground">(este aparelho)</span>}
-          </p>
-        )}
-        <p className="mt-0.5 text-[11px] text-muted-foreground">
-          {[device.platform, device.browser].filter(Boolean).join(" · ") || "Navegador"} · ativo{" "}
-          {relativeDayLabel(device.last_seen_at).toLowerCase()} às {fmtTime(device.last_seen_at)}
-        </p>
-      </div>
-      {!editing && (
-        <button
-          onClick={() => setEditing(true)}
-          aria-label="Renomear"
-          className="text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <Pencil className="size-3.5" />
-        </button>
-      )}
-      <button
-        onClick={remove}
-        aria-label="Remover"
-        className="text-muted-foreground transition-colors hover:text-[color:var(--color-danger)]"
-      >
-        <Trash2 className="size-3.5" />
-      </button>
     </div>
   );
 }
