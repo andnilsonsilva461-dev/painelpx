@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedModoLigacaoRouteImport } from './routes/_authenticated/modo-ligacao'
 import { Route as AuthenticatedInsightsRouteImport } from './routes/_authenticated/insights'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCalendarioRouteImport } from './routes/_authenticated/calendario'
@@ -34,6 +35,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedModoLigacaoRoute =
+  AuthenticatedModoLigacaoRouteImport.update({
+    id: '/modo-ligacao',
+    path: '/modo-ligacao',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedInsightsRoute = AuthenticatedInsightsRouteImport.update({
   id: '/insights',
   path: '/insights',
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/calendario': typeof AuthenticatedCalendarioRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/insights': typeof AuthenticatedInsightsRoute
+  '/modo-ligacao': typeof AuthenticatedModoLigacaoRoute
   '/clientes/$clientId': typeof AuthenticatedClientesClientIdRoute
   '/clientes/': typeof AuthenticatedClientesIndexRoute
   '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
@@ -90,6 +98,7 @@ export interface FileRoutesByTo {
   '/calendario': typeof AuthenticatedCalendarioRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/insights': typeof AuthenticatedInsightsRoute
+  '/modo-ligacao': typeof AuthenticatedModoLigacaoRoute
   '/clientes/$clientId': typeof AuthenticatedClientesClientIdRoute
   '/clientes': typeof AuthenticatedClientesIndexRoute
   '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
@@ -103,6 +112,7 @@ export interface FileRoutesById {
   '/_authenticated/calendario': typeof AuthenticatedCalendarioRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/insights': typeof AuthenticatedInsightsRoute
+  '/_authenticated/modo-ligacao': typeof AuthenticatedModoLigacaoRoute
   '/_authenticated/clientes/$clientId': typeof AuthenticatedClientesClientIdRoute
   '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
   '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/calendario'
     | '/dashboard'
     | '/insights'
+    | '/modo-ligacao'
     | '/clientes/$clientId'
     | '/clientes/'
     | '/api/public/hooks/reminders'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/calendario'
     | '/dashboard'
     | '/insights'
+    | '/modo-ligacao'
     | '/clientes/$clientId'
     | '/clientes'
     | '/api/public/hooks/reminders'
@@ -139,6 +151,7 @@ export interface FileRouteTypes {
     | '/_authenticated/calendario'
     | '/_authenticated/dashboard'
     | '/_authenticated/insights'
+    | '/_authenticated/modo-ligacao'
     | '/_authenticated/clientes/$clientId'
     | '/_authenticated/clientes/'
     | '/api/public/hooks/reminders'
@@ -173,6 +186,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/modo-ligacao': {
+      id: '/_authenticated/modo-ligacao'
+      path: '/modo-ligacao'
+      fullPath: '/modo-ligacao'
+      preLoaderRoute: typeof AuthenticatedModoLigacaoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/insights': {
       id: '/_authenticated/insights'
@@ -231,6 +251,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCalendarioRoute: typeof AuthenticatedCalendarioRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedInsightsRoute: typeof AuthenticatedInsightsRoute
+  AuthenticatedModoLigacaoRoute: typeof AuthenticatedModoLigacaoRoute
   AuthenticatedClientesClientIdRoute: typeof AuthenticatedClientesClientIdRoute
   AuthenticatedClientesIndexRoute: typeof AuthenticatedClientesIndexRoute
 }
@@ -240,6 +261,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCalendarioRoute: AuthenticatedCalendarioRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedInsightsRoute: AuthenticatedInsightsRoute,
+  AuthenticatedModoLigacaoRoute: AuthenticatedModoLigacaoRoute,
   AuthenticatedClientesClientIdRoute: AuthenticatedClientesClientIdRoute,
   AuthenticatedClientesIndexRoute: AuthenticatedClientesIndexRoute,
 }
