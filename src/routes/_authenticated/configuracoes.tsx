@@ -386,16 +386,17 @@ function SettingsPage() {
       <section className="mt-8">
         <div className="mb-3 flex items-end justify-between">
           <div>
-            <h2 className="text-[13px] font-medium">Meus dispositivos</h2>
+            <h2 className="text-[13px] font-medium">Dispositivos Registrados</h2>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
-              {devices?.length ?? 0} aparelho(s) registrados automaticamente
+              {devices?.length ?? 0} aparelho(s) vinculados à sua conta — cada login com notificações permitidas
+              aparece aqui automaticamente
             </p>
           </div>
           <Link
             to="/dispositivos"
             className="flex items-center gap-1 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
           >
-            Ver todos <ArrowRight className="size-3" />
+            Gerenciar <ArrowRight className="size-3" />
           </Link>
         </div>
         <div className="grid gap-3">
@@ -404,11 +405,12 @@ function SettingsPage() {
               Nenhum dispositivo registrado. Ative as notificações para registrar este aparelho.
             </p>
           )}
-          {devices?.slice(0, 3).map((device, i) => (
+          {devices?.map((device, i) => (
             <DeviceCard key={device.id} device={device} current={device.endpoint === endpoint} index={i} />
           ))}
         </div>
       </section>
+
 
       {/* ---------- history ---------- */}
       <section className="panel mt-8 overflow-hidden">
