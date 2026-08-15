@@ -158,12 +158,22 @@ function AuthPage() {
             </Button>
           </form>
 
-          <button
-            className="mt-5 text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
-            onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-          >
-            {mode === "signin" ? "Não tem conta? Criar agora" : "Já tenho conta"}
-          </button>
+          <div className="mt-5 flex flex-col items-start gap-2">
+            <button
+              className="text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+              onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+            >
+              {mode === "signin" ? "Não tem conta? Criar agora" : "Já tenho conta"}
+            </button>
+            <button
+              type="button"
+              className="text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+              onClick={sendReset}
+              disabled={loading}
+            >
+              Entrei com Google? Definir senha por e-mail
+            </button>
+          </div>
         </div>
       </div>
     </div>
