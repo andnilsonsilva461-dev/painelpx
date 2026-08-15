@@ -66,6 +66,25 @@ function AuthPage() {
     }
   }
 
+  async function sendReset() {
+    if (!email.trim()) {
+      toast.error("Digite seu e-mail primeiro");
+      return;
+    }
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast.success("Enviamos um link para você definir sua senha.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Não foi possível enviar o e-mail");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function google() {
     const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
     if (result.error) {
@@ -139,12 +158,22 @@ function AuthPage() {
             </Button>
           </form>
 
-          <button
-            className="mt-5 text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
-            onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-          >
-            {mode === "signin" ? "Não tem conta? Criar agora" : "Já tenho conta"}
-          </button>
+          <div className="mt-5 flex flex-col items-start gap-2">
+            <button
+              className="text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+              onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+            >
+              {mode === "signin" ? "Não tem conta? Criar agora" : "Já tenho conta"}
+            </button>
+            <button
+              type="button"
+              className="text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+              onClick={sendReset}
+              disabled={loading}
+            >
+              Entrei com Google? Definir senha por e-mail
+            </button>
+          </div>
         </div>
       </div>
     </div>
