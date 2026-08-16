@@ -163,7 +163,7 @@ function AuthPage() {
               onClick={sendReset}
               disabled={loading}
             >
-              Entrei com Google? Definir senha por e-mail
+              Esqueceu sua senha ou entrou com Google? Definir senha
             </button>
           </div>
         </div>
