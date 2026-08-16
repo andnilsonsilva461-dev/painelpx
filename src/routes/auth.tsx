@@ -122,15 +122,7 @@ function AuthPage() {
           <p className="text-eyebrow">{mode === "signin" ? "Bem-vindo de volta" : "Comece agora"}</p>
           <h2 className="mt-2 text-xl font-medium">{mode === "signin" ? "Entrar no Orbit" : "Criar sua conta"}</h2>
 
-          <Button variant="outline" className="mt-6 w-full" onClick={google}>
-            Continuar com Google
-          </Button>
-
-          <div className="my-5 flex items-center gap-3 text-[11px] text-muted-foreground">
-            <span className="h-px flex-1 bg-border" /> ou e-mail <span className="h-px flex-1 bg-border" />
-          </div>
-
-          <form onSubmit={submit} className="space-y-4">
+          <form onSubmit={submit} className="mt-8 space-y-4">
             {mode === "signup" && (
               <div className="space-y-1.5">
                 <Label className="text-[11px] text-muted-foreground">Nome</Label>
