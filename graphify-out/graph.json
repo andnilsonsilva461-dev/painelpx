@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T18:12:41.899559+00:00",
+  "generated_at": "2026-09-21T18:13:48.757634+00:00",
   "files": [
     {
       "path": "components.json",
@@ -127,7 +127,7 @@
     },
     {
       "path": "src/lib/bonus.ts",
-      "bytes": 4655
+      "bytes": 5787
     },
     {
       "path": "src/lib/error-capture.ts",
