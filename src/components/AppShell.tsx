@@ -8,11 +8,10 @@ import {
   Sun,
   LogOut,
   Gift,
-  Trophy,
-  Settings,
-  History,
-  Plus,
+  Target,
+  BarChart,
   Shield,
+  Plus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MeetingDialog } from "@/components/MeetingDialog";
@@ -24,13 +23,12 @@ import { useMyRole } from "@/lib/bonus";
 
 const NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/agenda", label: "Reuniões", icon: ListChecks },
+  { to: "/prospects", label: "Prospects", icon: Target },
+  { to: "/reunioes", label: "Reuniões", icon: ListChecks },
+  { to: "/bonificacao", label: "Bonificação", icon: Gift },
   { to: "/equipe", label: "Equipe", icon: Users },
-  { to: "/ranking", label: "Ranking", icon: Trophy },
-  { to: "/bonificacao", label: "Bonificações", icon: Gift },
-  { to: "/historico", label: "Histórico", icon: History },
-  { to: "/admin", label: "Admin", icon: Shield },
-  { to: "/configuracoes", label: "Configurações", icon: Settings },
+  { to: "/insights", label: "Relatórios", icon: BarChart },
+  { to: "/admin", label: "Administração", icon: Shield },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -65,7 +63,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const activeNav = NAV.filter((item) => {
     if (role === "sdr") {
-      return ["Reuniões", "Bonificações", "Histórico"].includes(item.label);
+      return ["Dashboard", "Prospects", "Reuniões", "Bonificação"].includes(item.label);
     }
     return true;
   });

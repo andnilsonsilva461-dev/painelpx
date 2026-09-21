@@ -117,6 +117,41 @@ function SDRProgressPage() {
         </div>
       </div>
 
+      <div className="mt-8 panel p-6">
+        <h2 className="text-lg font-medium mb-4">Como funciona o bônus?</h2>
+        <p className="text-[13px] text-muted-foreground mb-4">
+          A bonificação é calculada de acordo com a quantidade de reuniões qualificadas marcadas pelo SDR durante o mês. O bônus é por faixa e não acumulativo.
+        </p>
+        <div className="space-y-2">
+          {rules && rules.length > 0 && (
+            <div className="flex justify-between items-center text-sm p-3 rounded-md border border-border bg-surface">
+              <span className="font-medium text-muted-foreground">
+                Até {Math.min(...rules.map(r => r.min_meetings)) - 1} reuniões
+              </span>
+              <span className="font-semibold text-muted-foreground">R$ 0,00</span>
+            </div>
+          )}
+          
+          {rules && rules.length > 0 ? [...rules].sort((a,b) => a.min_meetings - b.min_meetings).map((rule, i, arr) => {
+            const next = arr[i+1];
+            const range = next 
+              ? `${rule.min_meetings} a ${next.min_meetings - 1} reuniões` 
+              : `${rule.min_meetings} ou mais reuniões`;
+            
+            return (
+              <div key={rule.id} className="flex justify-between items-center text-sm p-3 rounded-md border border-border bg-surface">
+                <span className="font-medium text-muted-foreground">{range}</span>
+                <span className="font-semibold text-success">
+                  {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(rule.bonus_amount)}
+                </span>
+              </div>
+            )
+          }) : (
+             <p className="text-sm text-muted-foreground">Nenhuma regra de bonificação configurada.</p>
+          )}
+        </div>
+      </div>
+
       <div className="mt-6 rounded-lg bg-surface/50 border border-border px-4 py-3 flex items-start gap-3">
         <Info className="size-4 text-muted-foreground shrink-0 mt-0.5" />
         <p className="text-xs text-muted-foreground leading-relaxed">
