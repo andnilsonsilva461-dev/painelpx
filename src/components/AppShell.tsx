@@ -15,6 +15,7 @@ import {
   Sun,
   Bell,
   LogOut,
+  Gift,
 } from "lucide-react";
 import {
   CommandDialog,
@@ -43,6 +44,7 @@ const NAV = [
   { to: "/insights", label: "Insights", icon: BarChart3 },
   { to: "/prospeccao", label: "Prospecção", icon: Radio },
   { to: "/modo-ligacao", label: "Modo ligação", icon: PhoneCall },
+  { to: "/bonificacao", label: "Bonificação", icon: Gift },
   { to: "/configuracoes", label: "Notificações", icon: BellRing },
 ] as const;
 
