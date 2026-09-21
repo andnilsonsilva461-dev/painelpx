@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T18:19:58.476417+00:00",
+  "generated_at": "2026-09-21T18:21:22.890383+00:00",
   "files": [
     {
       "path": "components.json",
@@ -88,6 +88,10 @@
     {
       "path": "supabase/migrations/20260728010902_11bf89a8-d1d6-4422-b22e-0fe1f08d662c.sql",
       "bytes": 170
+    },
+    {
+      "path": "supabase/migrations/20240101000000_pixel_bonus.sql",
+      "bytes": 1755
     },
     {
       "path": "supabase/migrations/20260728020708_0799a7f5-e9d6-4c49-a2da-6ba5e0fe9c49.sql",
