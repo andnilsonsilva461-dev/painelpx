@@ -2,11 +2,11 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { Shield, Check, X, Plus, Trash2 } from "lucide-react";
 import { useMyRole, useBonusRules, useAllSDRs, calculateBonus, useCloseMonth, useAddBonusRule, useDeleteBonusRule } from "@/lib/bonus";
-import { useAllMeetings } from "@/lib/data";
+import { useAllMeetings, useSession, useAdminRealtime } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -16,8 +16,11 @@ export const Route = createFileRoute("/_authenticated/admin")({
 
 function AdminPage() {
   const { data: role, isLoading: roleLoading } = useMyRole();
+  const { data: user } = useSession();
   const navigate = useNavigate();
   const [tab, setTab] = useState("validacao");
+
+  useAdminRealtime(role === "admin", user?.id);
 
   useEffect(() => {
     if (!roleLoading && role !== "admin") {
@@ -36,15 +39,16 @@ function AdminPage() {
           <Shield className="size-6 text-accent" /> Painel do Administrador
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Valide reuniões, feche o mês e gerencie as regras de bonificação.
+          Valide reuniões, feche o mês, gerencie as regras de bonificação e acompanhe atividades.
         </p>
       </div>
 
-      <div className="flex gap-2 mb-6 border-b border-border pb-px">
+      <div className="flex flex-wrap gap-2 mb-6 border-b border-border pb-px">
         {[
           { id: "validacao", label: "Validação" },
           { id: "fechamento", label: "Fechamento" },
           { id: "regras", label: "Regras de Bônus" },
+          { id: "atividades", label: "Atividades Recentes" },
         ].map((t) => (
           <button
             key={t.id}
@@ -64,6 +68,7 @@ function AdminPage() {
         {tab === "validacao" && <ValidacaoTab />}
         {tab === "fechamento" && <FechamentoTab />}
         {tab === "regras" && <RegrasTab />}
+        {tab === "atividades" && <AtividadesTab />}
       </div>
     </div>
   );
@@ -336,4 +341,73 @@ function RegrasTab() {
       </div>
     </div>
   )
+}
+
+function AtividadesTab() {
+  const { data: activities, isLoading: actsLoading } = useQuery({
+    queryKey: ["admin_activities"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("history_events")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  const { data: profiles, isLoading: profsLoading } = useQuery({
+    queryKey: ["profiles_all"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("profiles").select("id, full_name");
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  const isLoading = actsLoading || profsLoading;
+
+  function getUserName(id: string) {
+    return profiles?.find((p: any) => p.id === id)?.full_name || "Desconhecido";
+  }
+
+  return (
+    <div className="space-y-6 animate-in fade-in duration-300">
+      <div className="panel overflow-hidden">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-muted/30 border-b border-border">
+            <tr>
+              <th className="px-4 py-3 font-medium text-muted-foreground w-40">Data / Hora</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground w-48">Usuário</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">Ação</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {isLoading && (
+              <tr><td colSpan={3} className="px-4 py-8 text-center text-muted-foreground">Carregando atividades...</td></tr>
+            )}
+            {!isLoading && activities?.map((act: any) => (
+              <tr key={act.id} className="row-hover">
+                <td className="px-4 py-3 tabular text-xs text-muted-foreground">
+                  {format(new Date(act.created_at), "dd/MM/yyyy HH:mm")}
+                </td>
+                <td className="px-4 py-3 font-medium text-[13px]">
+                  {getUserName(act.user_id)}
+                </td>
+                <td className="px-4 py-3 text-[13px] text-muted-foreground">
+                  {act.event_type} {act.description && `- ${act.description}`}
+                </td>
+              </tr>
+            ))}
+            {!isLoading && (!activities || activities.length === 0) && (
+              <tr>
+                <td colSpan={3} className="px-4 py-8 text-center text-muted-foreground">Nenhuma atividade recente encontrada.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 }

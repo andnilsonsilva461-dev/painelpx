@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Client, Meeting, MeetingWithClient, MeetingStatus } from "./domain";
 import { DEFAULT_OFFSETS } from "./domain";
+import { toast } from "sonner";
 
 const MEETING_SELECT = "*, client:clients(*)";
 
@@ -299,6 +300,33 @@ export function useUpdateClient() {
       qc.invalidateQueries({ queryKey: ["timeline", v.id] });
     },
   });
+}
+
+export function useAdminRealtime(isAdmin: boolean, currentUserId?: string) {
+  const qc = useQueryClient();
+  useEffect(() => {
+    if (!isAdmin || !currentUserId) return;
+    const channel = supabase
+      .channel("admin-sync")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "meetings" }, (payload) => {
+        if (payload.new.user_id !== currentUserId) {
+          toast.info("Nova reunião agendada", { description: "Uma nova reunião foi criada na plataforma." });
+          qc.invalidateQueries({ queryKey: ["admin_activities"] });
+          qc.invalidateQueries({ queryKey: ["meetings"] });
+        }
+      })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "profiles" }, (payload) => {
+        if (payload.new.id !== currentUserId) {
+          toast.info("Novo usuário registrado", { description: payload.new.full_name || "Novo membro na equipe" });
+          qc.invalidateQueries({ queryKey: ["admin_activities"] });
+          qc.invalidateQueries({ queryKey: ["all-sdrs"] });
+        }
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [isAdmin, currentUserId, qc]);
 }
 
 /** Live sync: any change to meetings/notifications refreshes the cache. */
