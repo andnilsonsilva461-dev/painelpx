@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T18:13:48.757634+00:00",
+  "generated_at": "2026-09-21T18:16:48.035405+00:00",
   "files": [
     {
       "path": "components.json",
@@ -203,7 +203,7 @@
     },
     {
       "path": "src/routes/_authenticated/equipe.tsx",
-      "bytes": 3787
+      "bytes": 4629
     },
     {
       "path": "src/routes/_authenticated/calendario.tsx",
@@ -231,7 +231,7 @@
     },
     {
       "path": "src/routes/_authenticated/historico.tsx",
-      "bytes": 8403
+      "bytes": 7475
     },
     {
       "path": "src/routes/_authenticated/insights.tsx",
@@ -251,7 +251,7 @@
     },
     {
       "path": "src/routes/_authenticated/ranking.tsx",
-      "bytes": 5416
+      "bytes": 5761
     },
     {
       "path": "src/routes/api/public/hooks/reminders.ts",
@@ -1085,19 +1085,31 @@
     },
     {
       "source": "src/routes/_authenticated/equipe.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/equipe.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/equipe.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/equipe.tsx",
       "target": "@/lib/bonus"
     },
     {
       "source": "src/routes/_authenticated/equipe.tsx",
-      "target": "framer-motion"
+      "target": "@/components/ui/switch"
+    },
+    {
+      "source": "src/routes/_authenticated/equipe.tsx",
+      "target": "sonner"
     },
     {
       "source": "src/routes/_authenticated/equipe.tsx",
       "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/equipe.tsx",
-      "target": "@/components/ui/button"
     },
     {
       "source": "src/routes/_authenticated/calendario.tsx",
@@ -1341,19 +1353,19 @@
     },
     {
       "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
       "target": "@/lib/bonus"
     },
     {
       "source": "src/routes/_authenticated/historico.tsx",
       "target": "@/lib/data"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "framer-motion"
     },
     {
       "source": "src/routes/_authenticated/historico.tsx",
@@ -1369,19 +1381,15 @@
     },
     {
       "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/components/ui/select"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
       "target": "sonner"
     },
     {
       "source": "src/routes/_authenticated/historico.tsx",
       "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@/lib/utils"
     },
     {
       "source": "src/routes/_authenticated/insights.tsx",
@@ -1561,19 +1569,7 @@
     },
     {
       "source": "src/routes/_authenticated/ranking.tsx",
-      "target": "@/lib/bonus"
-    },
-    {
-      "source": "src/routes/_authenticated/ranking.tsx",
-      "target": "@/lib/data"
-    },
-    {
-      "source": "src/routes/_authenticated/ranking.tsx",
       "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/ranking.tsx",
-      "target": "framer-motion"
     },
     {
       "source": "src/routes/_authenticated/ranking.tsx",
@@ -1581,11 +1577,11 @@
     },
     {
       "source": "src/routes/_authenticated/ranking.tsx",
-      "target": "@/lib/utils"
+      "target": "@/lib/data"
     },
     {
       "source": "src/routes/_authenticated/ranking.tsx",
-      "target": "@/components/ui/select"
+      "target": "@/lib/bonus"
     },
     {
       "source": "src/routes/_authenticated/ranking.tsx",
@@ -1594,6 +1590,10 @@
     {
       "source": "src/routes/_authenticated/ranking.tsx",
       "target": "@/lib/dates"
+    },
+    {
+      "source": "src/routes/_authenticated/ranking.tsx",
+      "target": "@/lib/utils"
     },
     {
       "source": "src/routes/api/public/hooks/reminders.ts",
