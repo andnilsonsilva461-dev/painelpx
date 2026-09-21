@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T18:16:48.035405+00:00",
+  "generated_at": "2026-09-21T18:19:58.476417+00:00",
   "files": [
     {
       "path": "components.json",
@@ -203,7 +203,7 @@
     },
     {
       "path": "src/routes/_authenticated/equipe.tsx",
-      "bytes": 4629
+      "bytes": 3365
     },
     {
       "path": "src/routes/_authenticated/calendario.tsx",
@@ -231,7 +231,7 @@
     },
     {
       "path": "src/routes/_authenticated/historico.tsx",
-      "bytes": 7475
+      "bytes": 4840
     },
     {
       "path": "src/routes/_authenticated/insights.tsx",
@@ -251,7 +251,7 @@
     },
     {
       "path": "src/routes/_authenticated/ranking.tsx",
-      "bytes": 5761
+      "bytes": 4028
     },
     {
       "path": "src/routes/api/public/hooks/reminders.ts",
@@ -1085,7 +1085,7 @@
     },
     {
       "source": "src/routes/_authenticated/equipe.tsx",
-      "target": "react"
+      "target": "lucide-react"
     },
     {
       "source": "src/routes/_authenticated/equipe.tsx",
@@ -1094,22 +1094,6 @@
     {
       "source": "src/routes/_authenticated/equipe.tsx",
       "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/equipe.tsx",
-      "target": "@/lib/bonus"
-    },
-    {
-      "source": "src/routes/_authenticated/equipe.tsx",
-      "target": "@/components/ui/switch"
-    },
-    {
-      "source": "src/routes/_authenticated/equipe.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/equipe.tsx",
-      "target": "lucide-react"
     },
     {
       "source": "src/routes/_authenticated/calendario.tsx",
@@ -1353,6 +1337,10 @@
     },
     {
       "source": "src/routes/_authenticated/historico.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
       "target": "@tanstack/react-query"
     },
     {
@@ -1365,31 +1353,11 @@
     },
     {
       "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/lib/data"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
       "target": "date-fns"
     },
     {
       "source": "src/routes/_authenticated/historico.tsx",
       "target": "@/lib/dates"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/lib/utils"
     },
     {
       "source": "src/routes/_authenticated/insights.tsx",
@@ -1569,10 +1537,6 @@
     },
     {
       "source": "src/routes/_authenticated/ranking.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/ranking.tsx",
       "target": "lucide-react"
     },
     {
@@ -1589,7 +1553,7 @@
     },
     {
       "source": "src/routes/_authenticated/ranking.tsx",
-      "target": "@/lib/dates"
+      "target": "react"
     },
     {
       "source": "src/routes/_authenticated/ranking.tsx",
