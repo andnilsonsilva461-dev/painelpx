@@ -41,7 +41,6 @@ export function useBonusRules() {
       const { data, error } = await supabase
         .from("bonus_rules")
         .select("*")
-        .eq("active", true)
         .order("min_meetings");
       if (error) throw error;
       return data as BonusRule[];
@@ -70,18 +69,19 @@ export function useAllSDRs() {
 }
 
 export function calculateBonus(qualifiedMeetings: number, rules: BonusRule[]) {
-  if (!rules || rules.length === 0) return { bonus: 0, nextGoal: null, missing: 0, isMax: false };
+  const activeRules = rules.filter(r => r.active);
+  if (!activeRules || activeRules.length === 0) return { bonus: 0, nextGoal: null, missing: 0, isMax: false };
 
   let bonus = 0;
   let nextGoal: number | null = null;
 
-  const applicable = rules.find(
+  const applicable = activeRules.find(
     (r) => qualifiedMeetings >= r.min_meetings && (r.max_meetings === null || qualifiedMeetings <= r.max_meetings)
   );
 
   if (applicable) bonus = applicable.bonus_amount;
 
-  const nextRules = rules
+  const nextRules = activeRules
     .filter((r) => r.min_meetings > qualifiedMeetings)
     .sort((a, b) => a.min_meetings - b.min_meetings);
 
@@ -151,5 +151,38 @@ export function useUpdatePaymentStatus() {
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["monthly-results"] }),
+  });
+}
+
+export function useAddBonusRule() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (rule: Omit<BonusRule, "id">) => {
+      const { error } = await supabase.from("bonus_rules" as any).insert(rule);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["bonus-rules"] }),
+  });
+}
+
+export function useUpdateBonusRule() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, values }: { id: string; values: Partial<BonusRule> }) => {
+      const { error } = await supabase.from("bonus_rules" as any).update(values).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["bonus-rules"] }),
+  });
+}
+
+export function useDeleteBonusRule() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("bonus_rules" as any).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["bonus-rules"] }),
   });
 }
