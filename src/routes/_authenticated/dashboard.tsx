@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Trophy, CalendarCheck, Users, Banknote, CalendarClock, ArrowUpRight } from "lucide-react";
+import { Trophy, CalendarCheck, Users, Banknote, CalendarClock, ArrowUpRight, Shield } from "lucide-react";
 import { useAllMeetings } from "@/lib/data";
 import { useMyRole, useAllSDRs, useBonusRules, calculateBonus } from "@/lib/bonus";
 import { format, isSameMonth } from "date-fns";
@@ -9,6 +9,7 @@ import { L } from "@/lib/dates";
 import { MeetingDialog } from "@/components/MeetingDialog";
 import type { MeetingWithClient } from "@/lib/domain";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -88,9 +89,18 @@ function Dashboard() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className="flex flex-col gap-4 sm:flex-row sm:items-end justify-between"
       >
-        <p className="text-eyebrow">{format(now, "MMMM 'de' yyyy", L)}</p>
-        <h1 className="mt-2 text-2xl font-medium">Visão Geral da Equipe</h1>
+        <div>
+          <p className="text-eyebrow">{format(now, "MMMM 'de' yyyy", L)}</p>
+          <h1 className="mt-2 text-2xl font-medium">Visão Geral da Equipe</h1>
+        </div>
+        <Button asChild>
+          <Link to="/admin">
+            <Shield className="size-4 mr-2" /> 
+            Painel do Administrador
+          </Link>
+        </Button>
       </motion.header>
 
       <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
