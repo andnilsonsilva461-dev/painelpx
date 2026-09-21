@@ -50,7 +50,9 @@ function Dashboard() {
       sdrMap.set(m.user_id, (sdrMap.get(m.user_id) ?? 0) + 1);
     }
 
-    const ranking = (sdrs ?? [])
+    const activeSdrs = (sdrs ?? []).filter((s) => s.active);
+
+    const ranking = activeSdrs
       .map((sdr) => {
         const count = sdrMap.get(sdr.user_id) ?? 0;
         const { bonus, nextGoal, missing, isMax } = calculateBonus(count, rules ?? []);
@@ -71,7 +73,7 @@ function Dashboard() {
       qualified: qualifiedThisMonth.length,
       realized: realizedThisMonth,
       expectedBonus: totalExpectedBonus,
-      activeSdrs: sdrs?.length ?? 0,
+      activeSdrs: activeSdrs.length,
       ranking,
     };
   }, [meetings, sdrs, rules, now]);
@@ -114,7 +116,7 @@ function Dashboard() {
       <div className="mt-8">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-[15px] font-medium">Ranking da Equipe</h2>
-          <Link to="#" className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground">
+          <Link to="/historico" className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground">
             Ver histórico completo <ArrowUpRight className="size-3" />
           </Link>
         </div>

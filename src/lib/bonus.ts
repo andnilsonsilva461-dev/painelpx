@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export type BonusRule = {
@@ -62,8 +62,7 @@ export function useAllSDRs() {
           active,
           profiles ( full_name )
         `)
-        .eq("role", "sdr")
-        .eq("active", true);
+        .eq("role", "sdr");
       if (error) throw error;
       return data as unknown as UserRole[];
     },
@@ -96,4 +95,61 @@ export function calculateBonus(qualifiedMeetings: number, rules: BonusRule[]) {
     missing: nextGoal ? nextGoal - qualifiedMeetings : 0,
     isMax: nextGoal === null,
   };
+}
+
+export function useToggleSDR() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ userId, active }: { userId: string; active: boolean }) => {
+      const { error } = await supabase.from("user_roles" as any).update({ active }).eq("user_id", userId);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["all-sdrs"] }),
+  });
+}
+
+export function useMonthlyResults(filters?: { month?: number; year?: number; sdrId?: string }) {
+  return useQuery({
+    queryKey: ["monthly-results", filters],
+    queryFn: async () => {
+      let q = supabase.from("monthly_results" as any).select("*").order("year", { ascending: false }).order("month", { ascending: false });
+      if (filters?.month !== undefined) q = q.eq("month", filters.month);
+      if (filters?.year !== undefined) q = q.eq("year", filters.year);
+      if (filters?.sdrId) q = q.eq("user_id", filters.sdrId);
+      const { data, error } = await q;
+      if (error) throw error;
+      return data as any[];
+    },
+  });
+}
+
+export function useCloseMonth() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ month, year, results }: { month: number, year: number, results: { userId: string, meetings: number, bonus: number }[] }) => {
+      const payload = results.map(r => ({
+        user_id: r.userId,
+        month,
+        year,
+        qualified_meetings: r.meetings,
+        bonus_amount: r.bonus,
+        payment_status: "pendente"
+      }));
+      
+      const { error } = await supabase.from("monthly_results" as any).upsert(payload, { onConflict: 'user_id, month, year' });
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["monthly-results"] }),
+  });
+}
+
+export function useUpdatePaymentStatus() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: "pendente" | "aprovado" | "pago" }) => {
+      const { error } = await supabase.from("monthly_results" as any).update({ payment_status: status }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["monthly-results"] }),
+  });
 }

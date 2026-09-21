@@ -19,14 +19,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useRealtimeSync } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
+import { useMyRole } from "@/lib/bonus";
 
 const NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/agenda", label: "Reuniões", icon: ListChecks },
-  { to: "#", label: "Equipe", icon: Users, disabled: true },
-  { to: "#", label: "Ranking", icon: Trophy, disabled: true },
+  { to: "/equipe", label: "Equipe", icon: Users },
+  { to: "/ranking", label: "Ranking", icon: Trophy },
   { to: "/bonificacao", label: "Bonificações", icon: Gift },
-  { to: "#", label: "Histórico", icon: History, disabled: true },
+  { to: "/historico", label: "Histórico", icon: History },
   { to: "/configuracoes", label: "Configurações", icon: Settings },
 ];
 
@@ -36,6 +37,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const qc = useQueryClient();
   const [newOpen, setNewOpen] = useState(false);
   const [dark, setDark] = useState(true);
+  const { data: role } = useMyRole();
 
   useRealtimeSync();
 
@@ -59,6 +61,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     navigate({ to: "/auth", replace: true });
   }
 
+  const activeNav = NAV.filter((item) => {
+    if (role === "sdr") {
+      return ["Reuniões", "Bonificações", "Histórico"].includes(item.label);
+    }
+    return true;
+  });
+
   return (
     <div className="flex min-h-screen w-full bg-background">
       <aside className="sticky top-0 hidden h-screen w-[240px] shrink-0 flex-col border-r border-border bg-sidebar px-3 py-4 lg:flex">
@@ -70,19 +79,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <nav className="flex flex-1 flex-col gap-1">
-          {NAV.map((item) => {
-            const active = item.to !== "#" && pathname.startsWith(item.to);
-            if (item.disabled) {
-              return (
-                <div
-                  key={item.label}
-                  className="flex cursor-not-allowed items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px] text-muted-foreground opacity-50"
-                >
-                  <item.icon className="size-4" />
-                  {item.label}
-                </div>
-              );
-            }
+          {activeNav.map((item) => {
+            const active = pathname.startsWith(item.to);
             return (
               <Link
                 key={item.to}
@@ -126,7 +124,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </main>
 
         <nav className="sticky bottom-0 z-30 flex items-center justify-around border-t border-border bg-background/90 px-2 py-1.5 backdrop-blur-xl lg:hidden">
-          {NAV.filter(n => !n.disabled).slice(0, 5).map((item) => {
+          {activeNav.slice(0, 5).map((item) => {
             const active = pathname.startsWith(item.to);
             return (
               <Link
