@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T18:21:22.890383+00:00",
+  "generated_at": "2026-09-21T18:31:21.193206+00:00",
   "files": [
     {
       "path": "components.json",
@@ -191,7 +191,7 @@
     },
     {
       "path": "src/components/AppShell.tsx",
-      "bytes": 5934
+      "bytes": 5994
     },
     {
       "path": "src/components/MeetingDialog.tsx",
@@ -212,6 +212,10 @@
     {
       "path": "src/routes/_authenticated/calendario.tsx",
       "bytes": 9450
+    },
+    {
+      "path": "src/routes/_authenticated/admin.tsx",
+      "bytes": 14306
     },
     {
       "path": "src/routes/_authenticated/dashboard.tsx",
@@ -1138,6 +1142,50 @@
     {
       "source": "src/routes/_authenticated/calendario.tsx",
       "target": "@/lib/utils"
+    },
+    {
+      "source": "src/routes/_authenticated/admin.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/admin.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/admin.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/admin.tsx",
+      "target": "@/lib/bonus"
+    },
+    {
+      "source": "src/routes/_authenticated/admin.tsx",
+      "target": "@/lib/data"
+    },
+    {
+      "source": "src/routes/_authenticated/admin.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/admin.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/routes/_authenticated/admin.tsx",
+      "target": "@/integrations/supabase/client"
+    },
+    {
+      "source": "src/routes/_authenticated/admin.tsx",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/routes/_authenticated/admin.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/admin.tsx",
+      "target": "date-fns"
     },
     {
       "source": "src/routes/_authenticated/dashboard.tsx",
