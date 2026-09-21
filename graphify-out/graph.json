@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T17:46:38.908204+00:00",
+  "generated_at": "2026-09-21T17:50:05.467553+00:00",
   "files": [
     {
       "path": "components.json",
@@ -36,6 +36,10 @@
     {
       "path": ".lovable/project.json",
       "bytes": 124
+    },
+    {
+      "path": ".lovasiri/sync.json",
+      "bytes": 80
     },
     {
       "path": "public/sw.js",
@@ -179,7 +183,7 @@
     },
     {
       "path": "src/components/AppShell.tsx",
-      "bytes": 10923
+      "bytes": 10993
     },
     {
       "path": "src/components/MeetingDialog.tsx",
@@ -212,6 +216,10 @@
     {
       "path": "src/routes/_authenticated/route.tsx",
       "bytes": 522
+    },
+    {
+      "path": "src/routes/_authenticated/bonificacao.tsx",
+      "bytes": 2789
     },
     {
       "path": "src/routes/_authenticated/insights.tsx",
@@ -1258,6 +1266,18 @@
     {
       "source": "src/routes/_authenticated/route.tsx",
       "target": "@/components/AppShell"
+    },
+    {
+      "source": "src/routes/_authenticated/bonificacao.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/bonificacao.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/bonificacao.tsx",
+      "target": "framer-motion"
     },
     {
       "source": "src/routes/_authenticated/insights.tsx",
