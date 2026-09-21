@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T18:52:32.694148+00:00",
+  "generated_at": "2026-09-21T19:02:23.127067+00:00",
   "files": [
     {
       "path": "components.json",
@@ -82,6 +82,10 @@
       "bytes": 1963
     },
     {
+      "path": "supabase/migrations/20240801000000_set_admin_role.sql",
+      "bytes": 364
+    },
+    {
       "path": "supabase/migrations/20260728012303_2798ad2b-5ab0-49f3-a9d8-8012e9b22264.sql",
       "bytes": 2808
     },
@@ -147,7 +151,7 @@
     },
     {
       "path": "src/lib/data.ts",
-      "bytes": 10687
+      "bytes": 11903
     },
     {
       "path": "src/lib/error-page.ts",
@@ -215,7 +219,7 @@
     },
     {
       "path": "src/routes/_authenticated/admin.tsx",
-      "bytes": 14306
+      "bytes": 17177
     },
     {
       "path": "src/routes/_authenticated/dashboard.tsx",
@@ -794,6 +798,10 @@
     {
       "source": "src/lib/data.ts",
       "target": "./domain"
+    },
+    {
+      "source": "src/lib/data.ts",
+      "target": "sonner"
     },
     {
       "source": "src/lib/domain.ts",
