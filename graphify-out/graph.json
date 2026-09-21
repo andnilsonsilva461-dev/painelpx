@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T17:50:05.467553+00:00",
+  "generated_at": "2026-09-21T18:09:07.946544+00:00",
   "files": [
     {
       "path": "components.json",
@@ -126,6 +126,10 @@
       "bytes": 1276
     },
     {
+      "path": "src/lib/bonus.ts",
+      "bytes": 2456
+    },
+    {
       "path": "src/lib/error-capture.ts",
       "bytes": 2898
     },
@@ -139,7 +143,7 @@
     },
     {
       "path": "src/lib/data.ts",
-      "bytes": 10552
+      "bytes": 10687
     },
     {
       "path": "src/lib/error-page.ts",
@@ -183,11 +187,11 @@
     },
     {
       "path": "src/components/AppShell.tsx",
-      "bytes": 10993
+      "bytes": 6144
     },
     {
       "path": "src/components/MeetingDialog.tsx",
-      "bytes": 11029
+      "bytes": 12303
     },
     {
       "path": "src/components/StatusBadge.tsx",
@@ -203,7 +207,7 @@
     },
     {
       "path": "src/routes/_authenticated/dashboard.tsx",
-      "bytes": 10164
+      "bytes": 8076
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
@@ -219,7 +223,7 @@
     },
     {
       "path": "src/routes/_authenticated/bonificacao.tsx",
-      "bytes": 2789
+      "bytes": 5650
     },
     {
       "path": "src/routes/_authenticated/insights.tsx",
@@ -712,6 +716,14 @@
       "target": "date-fns/locale"
     },
     {
+      "source": "src/lib/bonus.ts",
+      "target": "@tanstack/react-query"
+    },
+    {
+      "source": "src/lib/bonus.ts",
+      "target": "@/integrations/supabase/client"
+    },
+    {
       "source": "src/lib/prospects.ts",
       "target": "@tanstack/react-query"
     },
@@ -913,27 +925,11 @@
     },
     {
       "source": "src/components/AppShell.tsx",
-      "target": "@/components/ui/command"
-    },
-    {
-      "source": "src/components/AppShell.tsx",
       "target": "@/components/ui/button"
     },
     {
       "source": "src/components/AppShell.tsx",
-      "target": "@/components/ui/popover"
-    },
-    {
-      "source": "src/components/AppShell.tsx",
       "target": "@/components/MeetingDialog"
-    },
-    {
-      "source": "src/components/AppShell.tsx",
-      "target": "@/components/ReminderEngine"
-    },
-    {
-      "source": "src/components/AppShell.tsx",
-      "target": "@/components/PushInstallPrompt"
     },
     {
       "source": "src/components/AppShell.tsx",
@@ -942,10 +938,6 @@
     {
       "source": "src/components/AppShell.tsx",
       "target": "@/lib/data"
-    },
-    {
-      "source": "src/components/AppShell.tsx",
-      "target": "@/lib/dates"
     },
     {
       "source": "src/components/AppShell.tsx",
@@ -1001,6 +993,10 @@
     },
     {
       "source": "src/components/MeetingDialog.tsx",
+      "target": "@/components/ui/switch"
+    },
+    {
+      "source": "src/components/MeetingDialog.tsx",
       "target": "@/lib/domain"
     },
     {
@@ -1010,6 +1006,10 @@
     {
       "source": "src/components/MeetingDialog.tsx",
       "target": "@/lib/dates"
+    },
+    {
+      "source": "src/components/MeetingDialog.tsx",
+      "target": "@/lib/bonus"
     },
     {
       "source": "src/components/StatusBadge.tsx",
@@ -1125,15 +1125,15 @@
     },
     {
       "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "@/lib/dates"
+      "target": "@/lib/bonus"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard.tsx",
+      "target": "date-fns"
     },
     {
       "source": "src/routes/_authenticated/dashboard.tsx",
       "target": "@/lib/dates"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "@/components/StatusBadge"
     },
     {
       "source": "src/routes/_authenticated/dashboard.tsx",
@@ -1273,11 +1273,31 @@
     },
     {
       "source": "src/routes/_authenticated/bonificacao.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/bonificacao.tsx",
       "target": "lucide-react"
     },
     {
       "source": "src/routes/_authenticated/bonificacao.tsx",
       "target": "framer-motion"
+    },
+    {
+      "source": "src/routes/_authenticated/bonificacao.tsx",
+      "target": "@/lib/data"
+    },
+    {
+      "source": "src/routes/_authenticated/bonificacao.tsx",
+      "target": "@/lib/bonus"
+    },
+    {
+      "source": "src/routes/_authenticated/bonificacao.tsx",
+      "target": "date-fns"
+    },
+    {
+      "source": "src/routes/_authenticated/bonificacao.tsx",
+      "target": "@/lib/dates"
     },
     {
       "source": "src/routes/_authenticated/insights.tsx",
