@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T18:09:07.946544+00:00",
+  "generated_at": "2026-09-21T18:12:41.899559+00:00",
   "files": [
     {
       "path": "components.json",
@@ -127,7 +127,7 @@
     },
     {
       "path": "src/lib/bonus.ts",
-      "bytes": 2456
+      "bytes": 4655
     },
     {
       "path": "src/lib/error-capture.ts",
@@ -187,7 +187,7 @@
     },
     {
       "path": "src/components/AppShell.tsx",
-      "bytes": 6144
+      "bytes": 5934
     },
     {
       "path": "src/components/MeetingDialog.tsx",
@@ -202,12 +202,16 @@
       "bytes": 6958
     },
     {
+      "path": "src/routes/_authenticated/equipe.tsx",
+      "bytes": 3787
+    },
+    {
       "path": "src/routes/_authenticated/calendario.tsx",
       "bytes": 9450
     },
     {
       "path": "src/routes/_authenticated/dashboard.tsx",
-      "bytes": 8076
+      "bytes": 8145
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
@@ -226,6 +230,10 @@
       "bytes": 5650
     },
     {
+      "path": "src/routes/_authenticated/historico.tsx",
+      "bytes": 8403
+    },
+    {
       "path": "src/routes/_authenticated/insights.tsx",
       "bytes": 8906
     },
@@ -240,6 +248,10 @@
     {
       "path": "src/routes/_authenticated/dispositivos.tsx",
       "bytes": 5458
+    },
+    {
+      "path": "src/routes/_authenticated/ranking.tsx",
+      "bytes": 5416
     },
     {
       "path": "src/routes/api/public/hooks/reminders.ts",
@@ -948,6 +960,10 @@
       "target": "@tanstack/react-query"
     },
     {
+      "source": "src/components/AppShell.tsx",
+      "target": "@/lib/bonus"
+    },
+    {
       "source": "src/components/MeetingDialog.tsx",
       "target": "react"
     },
@@ -1062,6 +1078,26 @@
     {
       "source": "src/components/DeviceCard.tsx",
       "target": "@/lib/utils"
+    },
+    {
+      "source": "src/routes/_authenticated/equipe.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/equipe.tsx",
+      "target": "@/lib/bonus"
+    },
+    {
+      "source": "src/routes/_authenticated/equipe.tsx",
+      "target": "framer-motion"
+    },
+    {
+      "source": "src/routes/_authenticated/equipe.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/equipe.tsx",
+      "target": "@/components/ui/button"
     },
     {
       "source": "src/routes/_authenticated/calendario.tsx",
@@ -1300,6 +1336,54 @@
       "target": "@/lib/dates"
     },
     {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@/lib/bonus"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@/lib/data"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "framer-motion"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "date-fns"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@/lib/dates"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/historico.tsx",
+      "target": "lucide-react"
+    },
+    {
       "source": "src/routes/_authenticated/insights.tsx",
       "target": "@tanstack/react-router"
     },
@@ -1470,6 +1554,46 @@
     {
       "source": "src/routes/_authenticated/dispositivos.tsx",
       "target": "@/lib/utils"
+    },
+    {
+      "source": "src/routes/_authenticated/ranking.tsx",
+      "target": "@tanstack/react-router"
+    },
+    {
+      "source": "src/routes/_authenticated/ranking.tsx",
+      "target": "@/lib/bonus"
+    },
+    {
+      "source": "src/routes/_authenticated/ranking.tsx",
+      "target": "@/lib/data"
+    },
+    {
+      "source": "src/routes/_authenticated/ranking.tsx",
+      "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/ranking.tsx",
+      "target": "framer-motion"
+    },
+    {
+      "source": "src/routes/_authenticated/ranking.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/routes/_authenticated/ranking.tsx",
+      "target": "@/lib/utils"
+    },
+    {
+      "source": "src/routes/_authenticated/ranking.tsx",
+      "target": "@/components/ui/select"
+    },
+    {
+      "source": "src/routes/_authenticated/ranking.tsx",
+      "target": "date-fns"
+    },
+    {
+      "source": "src/routes/_authenticated/ranking.tsx",
+      "target": "@/lib/dates"
     },
     {
       "source": "src/routes/api/public/hooks/reminders.ts",
