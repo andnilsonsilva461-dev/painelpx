@@ -12,6 +12,7 @@ import {
   Settings,
   History,
   Plus,
+  Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MeetingDialog } from "@/components/MeetingDialog";
@@ -28,6 +29,7 @@ const NAV = [
   { to: "/ranking", label: "Ranking", icon: Trophy },
   { to: "/bonificacao", label: "Bonificações", icon: Gift },
   { to: "/historico", label: "Histórico", icon: History },
+  { to: "/admin", label: "Admin", icon: Shield },
   { to: "/configuracoes", label: "Configurações", icon: Settings },
 ];
 
