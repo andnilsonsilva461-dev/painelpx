@@ -145,6 +145,8 @@ export type MeetingDraft = {
   notes?: string | null;
   reminderMinutes: number;
   reminderOffsets?: number[];
+  qualified?: boolean;
+  service?: string | null;
 };
 
 export function useSaveMeeting() {
@@ -197,6 +199,8 @@ export function useSaveMeeting() {
         reminder_minutes: draft.reminderMinutes,
         reminder_offsets: draft.reminderOffsets ?? DEFAULT_OFFSETS,
         reminder_fired: false,
+        qualified: draft.qualified ?? false,
+        service: draft.service ?? null,
       };
 
       if (draft.id) {

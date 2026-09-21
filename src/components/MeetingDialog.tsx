@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import {
   DURATIONS,
   REMINDER_OFFSETS,
@@ -30,6 +31,7 @@ import {
 } from "@/lib/domain";
 import { useDeleteMeeting, useSaveMeeting } from "@/lib/data";
 import { fmtDateTimeInput } from "@/lib/dates";
+import { useMyRole } from "@/lib/bonus";
 
 type Props = {
   open: boolean;
@@ -46,11 +48,13 @@ const empty = {
   instagram: "",
   email: "",
   notes: "",
+  service: "",
 };
 
 export function MeetingDialog({ open, onOpenChange, meeting, initialDate, compact }: Props) {
   const save = useSaveMeeting();
   const { data: settings } = useSettings();
+  const { data: role } = useMyRole();
   const defaults = settings?.default_reminder_offsets ?? DEFAULT_OFFSETS;
   const remove = useDeleteMeeting();
   const [form, setForm] = useState(empty);
@@ -59,12 +63,17 @@ export function MeetingDialog({ open, onOpenChange, meeting, initialDate, compac
   const [source, setSource] = useState<LeadSource>("live");
   const [status, setStatus] = useState<MeetingStatus>("agendada");
   const [offsets, setOffsets] = useState<number[]>(DEFAULT_OFFSETS);
+  const [qualified, setQualified] = useState(false);
   const [expanded, setExpanded] = useState(!compact);
+
+  const isAdmin = role === "admin";
 
   useEffect(() => {
     if (!open) return;
     setExpanded(!compact);
     if (meeting) {
+      const isQualified = (meeting as any).qualified ?? false;
+      const service = (meeting as any).service ?? "";
       setForm({
         clientName: meeting.client?.name ?? meeting.title ?? "",
         phone: meeting.client?.phone ?? "",
@@ -72,12 +81,14 @@ export function MeetingDialog({ open, onOpenChange, meeting, initialDate, compac
         instagram: meeting.client?.instagram ?? "",
         email: meeting.client?.email ?? "",
         notes: meeting.notes ?? "",
+        service: service,
       });
       setWhen(fmtDateTimeInput(new Date(meeting.starts_at)));
       setDuration(String(meeting.duration_minutes));
       setSource(meeting.source);
       setStatus(meeting.status);
       setOffsets(meeting.reminder_offsets ?? DEFAULT_OFFSETS);
+      setQualified(isQualified);
     } else {
       setForm(empty);
       setWhen(fmtDateTimeInput(initialDate ?? nextSlot()));
@@ -85,8 +96,9 @@ export function MeetingDialog({ open, onOpenChange, meeting, initialDate, compac
       setSource("live");
       setStatus("agendada");
       setOffsets(defaults);
+      setQualified(false);
     }
-  }, [open, meeting, initialDate, compact]);
+  }, [open, meeting, initialDate, compact, defaults]);
 
   const valid = form.clientName.trim().length > 1 && when.length > 0;
 
@@ -108,6 +120,8 @@ export function MeetingDialog({ open, onOpenChange, meeting, initialDate, compac
         notes: form.notes.trim().slice(0, 5000) || null,
         reminderMinutes: offsets.length ? Math.min(...offsets.filter((o) => o > 0), 15) : 15,
         reminderOffsets: offsets,
+        qualified: qualified,
+        service: form.service.trim().slice(0, 120) || null,
       });
       toast.success(meeting ? "Reunião atualizada" : "Reunião agendada");
       onOpenChange(false);
@@ -160,15 +174,8 @@ export function MeetingDialog({ open, onOpenChange, meeting, initialDate, compac
                 </SelectContent>
               </Select>
             </Field>
-            <Field label="Origem">
-              <Select value={source} onValueChange={(v) => setSource(v as LeadSource)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {SOURCES.map((s) => (
-                    <SelectItem key={s} value={s}>{SOURCE_LABEL[s]}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <Field label="Serviço">
+              <Input value={form.service} onChange={set("service")} placeholder="Ex: Landing Page" />
             </Field>
           </div>
 
@@ -178,16 +185,21 @@ export function MeetingDialog({ open, onOpenChange, meeting, initialDate, compac
               onClick={() => setExpanded(true)}
               className="text-xs font-medium text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
             >
-              Mais detalhes (empresa, Instagram, e-mail, status)
+              Mais detalhes (qualificação, origem, status, lembretes…)
             </button>
           ) : (
             <>
-              <div className="grid gap-4 sm:grid-cols-3">
-                <Field label="Empresa"><Input value={form.company} onChange={set("company")} /></Field>
-                <Field label="Instagram"><Input value={form.instagram} onChange={set("instagram")} placeholder="@perfil" /></Field>
-                <Field label="E-mail"><Input value={form.email} onChange={set("email")} type="email" /></Field>
-              </div>
               <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Origem">
+                  <Select value={source} onValueChange={(v) => setSource(v as LeadSource)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {SOURCES.map((s) => (
+                        <SelectItem key={s} value={s}>{SOURCE_LABEL[s]}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
                 <Field label="Status">
                   <Select value={status} onValueChange={(v) => setStatus(v as MeetingStatus)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
@@ -199,6 +211,26 @@ export function MeetingDialog({ open, onOpenChange, meeting, initialDate, compac
                   </Select>
                 </Field>
               </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Empresa"><Input value={form.company} onChange={set("company")} /></Field>
+                <Field label="Instagram"><Input value={form.instagram} onChange={set("instagram")} placeholder="@perfil" /></Field>
+              </div>
+              
+              <div className="flex items-center justify-between rounded-lg border border-border p-3">
+                <div className="space-y-0.5">
+                  <Label className="text-sm font-medium">Reunião qualificada?</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Apenas reuniões qualificadas contabilizam bônus.
+                  </p>
+                </div>
+                <Switch
+                  checked={qualified}
+                  onCheckedChange={setQualified}
+                  disabled={!isAdmin}
+                  aria-readonly={!isAdmin}
+                />
+              </div>
+
               <Field label="Lembretes">
                 <div className="flex flex-wrap gap-1.5">
                   {REMINDER_OFFSETS.map((r) => {
@@ -234,8 +266,8 @@ export function MeetingDialog({ open, onOpenChange, meeting, initialDate, compac
             <Textarea
               value={form.notes}
               onChange={set("notes")}
-              rows={expanded ? 6 : 3}
-              placeholder="Tudo que o cliente falou durante a ligação…"
+              rows={expanded ? 4 : 3}
+              placeholder="Detalhes importantes…"
               className="resize-none"
             />
           </Field>
