@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T19:02:23.127067+00:00",
+  "generated_at": "2026-09-21T17:46:38.908204+00:00",
   "files": [
     {
       "path": "components.json",
@@ -36,10 +36,6 @@
     {
       "path": ".lovable/project.json",
       "bytes": 124
-    },
-    {
-      "path": ".lovasiri/sync.json",
-      "bytes": 80
     },
     {
       "path": "public/sw.js",
@@ -82,20 +78,12 @@
       "bytes": 1963
     },
     {
-      "path": "supabase/migrations/20240801000000_set_admin_role.sql",
-      "bytes": 364
-    },
-    {
       "path": "supabase/migrations/20260728012303_2798ad2b-5ab0-49f3-a9d8-8012e9b22264.sql",
       "bytes": 2808
     },
     {
       "path": "supabase/migrations/20260728010902_11bf89a8-d1d6-4422-b22e-0fe1f08d662c.sql",
       "bytes": 170
-    },
-    {
-      "path": "supabase/migrations/20240101000000_pixel_bonus.sql",
-      "bytes": 1755
     },
     {
       "path": "supabase/migrations/20260728020708_0799a7f5-e9d6-4c49-a2da-6ba5e0fe9c49.sql",
@@ -134,10 +122,6 @@
       "bytes": 1276
     },
     {
-      "path": "src/lib/bonus.ts",
-      "bytes": 5787
-    },
-    {
       "path": "src/lib/error-capture.ts",
       "bytes": 2898
     },
@@ -151,7 +135,7 @@
     },
     {
       "path": "src/lib/data.ts",
-      "bytes": 11903
+      "bytes": 10552
     },
     {
       "path": "src/lib/error-page.ts",
@@ -195,11 +179,11 @@
     },
     {
       "path": "src/components/AppShell.tsx",
-      "bytes": 5939
+      "bytes": 10923
     },
     {
       "path": "src/components/MeetingDialog.tsx",
-      "bytes": 12303
+      "bytes": 11029
     },
     {
       "path": "src/components/StatusBadge.tsx",
@@ -210,20 +194,12 @@
       "bytes": 6958
     },
     {
-      "path": "src/routes/_authenticated/equipe.tsx",
-      "bytes": 3365
-    },
-    {
       "path": "src/routes/_authenticated/calendario.tsx",
       "bytes": 9450
     },
     {
-      "path": "src/routes/_authenticated/admin.tsx",
-      "bytes": 17177
-    },
-    {
       "path": "src/routes/_authenticated/dashboard.tsx",
-      "bytes": 14945
+      "bytes": 10164
     },
     {
       "path": "src/routes/_authenticated/configuracoes.tsx",
@@ -236,18 +212,6 @@
     {
       "path": "src/routes/_authenticated/route.tsx",
       "bytes": 522
-    },
-    {
-      "path": "src/routes/_authenticated/bonificacao.tsx",
-      "bytes": 7482
-    },
-    {
-      "path": "src/routes/_authenticated/historico.tsx",
-      "bytes": 4840
-    },
-    {
-      "path": "src/routes/_authenticated/reunioes.tsx",
-      "bytes": 11964
     },
     {
       "path": "src/routes/_authenticated/insights.tsx",
@@ -264,14 +228,6 @@
     {
       "path": "src/routes/_authenticated/dispositivos.tsx",
       "bytes": 5458
-    },
-    {
-      "path": "src/routes/_authenticated/prospects.tsx",
-      "bytes": 15885
-    },
-    {
-      "path": "src/routes/_authenticated/ranking.tsx",
-      "bytes": 4028
     },
     {
       "path": "src/routes/api/public/hooks/reminders.ts",
@@ -748,14 +704,6 @@
       "target": "date-fns/locale"
     },
     {
-      "source": "src/lib/bonus.ts",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/lib/bonus.ts",
-      "target": "@/integrations/supabase/client"
-    },
-    {
       "source": "src/lib/prospects.ts",
       "target": "@tanstack/react-query"
     },
@@ -798,10 +746,6 @@
     {
       "source": "src/lib/data.ts",
       "target": "./domain"
-    },
-    {
-      "source": "src/lib/data.ts",
-      "target": "sonner"
     },
     {
       "source": "src/lib/domain.ts",
@@ -961,11 +905,27 @@
     },
     {
       "source": "src/components/AppShell.tsx",
+      "target": "@/components/ui/command"
+    },
+    {
+      "source": "src/components/AppShell.tsx",
       "target": "@/components/ui/button"
     },
     {
       "source": "src/components/AppShell.tsx",
+      "target": "@/components/ui/popover"
+    },
+    {
+      "source": "src/components/AppShell.tsx",
       "target": "@/components/MeetingDialog"
+    },
+    {
+      "source": "src/components/AppShell.tsx",
+      "target": "@/components/ReminderEngine"
+    },
+    {
+      "source": "src/components/AppShell.tsx",
+      "target": "@/components/PushInstallPrompt"
     },
     {
       "source": "src/components/AppShell.tsx",
@@ -977,15 +937,15 @@
     },
     {
       "source": "src/components/AppShell.tsx",
+      "target": "@/lib/dates"
+    },
+    {
+      "source": "src/components/AppShell.tsx",
       "target": "@/lib/utils"
     },
     {
       "source": "src/components/AppShell.tsx",
       "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/components/AppShell.tsx",
-      "target": "@/lib/bonus"
     },
     {
       "source": "src/components/MeetingDialog.tsx",
@@ -1033,10 +993,6 @@
     },
     {
       "source": "src/components/MeetingDialog.tsx",
-      "target": "@/components/ui/switch"
-    },
-    {
-      "source": "src/components/MeetingDialog.tsx",
       "target": "@/lib/domain"
     },
     {
@@ -1046,10 +1002,6 @@
     {
       "source": "src/components/MeetingDialog.tsx",
       "target": "@/lib/dates"
-    },
-    {
-      "source": "src/components/MeetingDialog.tsx",
-      "target": "@/lib/bonus"
     },
     {
       "source": "src/components/StatusBadge.tsx",
@@ -1104,22 +1056,6 @@
       "target": "@/lib/utils"
     },
     {
-      "source": "src/routes/_authenticated/equipe.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/equipe.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/equipe.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/equipe.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
       "source": "src/routes/_authenticated/calendario.tsx",
       "target": "@tanstack/react-router"
     },
@@ -1160,56 +1096,16 @@
       "target": "@/lib/utils"
     },
     {
-      "source": "src/routes/_authenticated/admin.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/admin.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/admin.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/admin.tsx",
-      "target": "@/lib/bonus"
-    },
-    {
-      "source": "src/routes/_authenticated/admin.tsx",
-      "target": "@/lib/data"
-    },
-    {
-      "source": "src/routes/_authenticated/admin.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/admin.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/routes/_authenticated/admin.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/admin.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/admin.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/admin.tsx",
-      "target": "date-fns"
-    },
-    {
       "source": "src/routes/_authenticated/dashboard.tsx",
       "target": "@tanstack/react-router"
     },
     {
       "source": "src/routes/_authenticated/dashboard.tsx",
       "target": "react"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard.tsx",
+      "target": "framer-motion"
     },
     {
       "source": "src/routes/_authenticated/dashboard.tsx",
@@ -1221,27 +1117,27 @@
     },
     {
       "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "@/lib/bonus"
+      "target": "@/lib/dates"
     },
     {
       "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "date-fns"
+      "target": "@/lib/dates"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard.tsx",
+      "target": "@/components/StatusBadge"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard.tsx",
+      "target": "@/components/MeetingDialog"
+    },
+    {
+      "source": "src/routes/_authenticated/dashboard.tsx",
+      "target": "@/lib/domain"
     },
     {
       "source": "src/routes/_authenticated/dashboard.tsx",
       "target": "@/lib/utils"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "@/components/ui/progress"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/dashboard.tsx",
-      "target": "@/integrations/supabase/client"
     },
     {
       "source": "src/routes/_authenticated/configuracoes.tsx",
@@ -1362,114 +1258,6 @@
     {
       "source": "src/routes/_authenticated/route.tsx",
       "target": "@/components/AppShell"
-    },
-    {
-      "source": "src/routes/_authenticated/bonificacao.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/bonificacao.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/bonificacao.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/bonificacao.tsx",
-      "target": "framer-motion"
-    },
-    {
-      "source": "src/routes/_authenticated/bonificacao.tsx",
-      "target": "@/lib/data"
-    },
-    {
-      "source": "src/routes/_authenticated/bonificacao.tsx",
-      "target": "@/lib/bonus"
-    },
-    {
-      "source": "src/routes/_authenticated/bonificacao.tsx",
-      "target": "date-fns"
-    },
-    {
-      "source": "src/routes/_authenticated/bonificacao.tsx",
-      "target": "@/lib/dates"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/lib/bonus"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "date-fns"
-    },
-    {
-      "source": "src/routes/_authenticated/historico.tsx",
-      "target": "@/lib/dates"
-    },
-    {
-      "source": "src/routes/_authenticated/reunioes.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/reunioes.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/reunioes.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/reunioes.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/reunioes.tsx",
-      "target": "date-fns"
-    },
-    {
-      "source": "src/routes/_authenticated/reunioes.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/reunioes.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/reunioes.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/routes/_authenticated/reunioes.tsx",
-      "target": "@/lib/bonus"
-    },
-    {
-      "source": "src/routes/_authenticated/reunioes.tsx",
-      "target": "@/components/StatusBadge"
-    },
-    {
-      "source": "src/routes/_authenticated/reunioes.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/reunioes.tsx",
-      "target": "@/components/MeetingDialog"
     },
     {
       "source": "src/routes/_authenticated/insights.tsx",
@@ -1641,86 +1429,6 @@
     },
     {
       "source": "src/routes/_authenticated/dispositivos.tsx",
-      "target": "@/lib/utils"
-    },
-    {
-      "source": "src/routes/_authenticated/prospects.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/prospects.tsx",
-      "target": "@tanstack/react-query"
-    },
-    {
-      "source": "src/routes/_authenticated/prospects.tsx",
-      "target": "@/integrations/supabase/client"
-    },
-    {
-      "source": "src/routes/_authenticated/prospects.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/prospects.tsx",
-      "target": "date-fns"
-    },
-    {
-      "source": "src/routes/_authenticated/prospects.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/prospects.tsx",
-      "target": "@/components/ui/button"
-    },
-    {
-      "source": "src/routes/_authenticated/prospects.tsx",
-      "target": "@/components/ui/input"
-    },
-    {
-      "source": "src/routes/_authenticated/prospects.tsx",
-      "target": "@/components/ui/label"
-    },
-    {
-      "source": "src/routes/_authenticated/prospects.tsx",
-      "target": "@/components/ui/textarea"
-    },
-    {
-      "source": "src/routes/_authenticated/prospects.tsx",
-      "target": "@/components/ui/dialog"
-    },
-    {
-      "source": "src/routes/_authenticated/prospects.tsx",
-      "target": "sonner"
-    },
-    {
-      "source": "src/routes/_authenticated/prospects.tsx",
-      "target": "@/lib/bonus"
-    },
-    {
-      "source": "src/routes/_authenticated/ranking.tsx",
-      "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/_authenticated/ranking.tsx",
-      "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/ranking.tsx",
-      "target": "@/lib/data"
-    },
-    {
-      "source": "src/routes/_authenticated/ranking.tsx",
-      "target": "@/lib/bonus"
-    },
-    {
-      "source": "src/routes/_authenticated/ranking.tsx",
-      "target": "date-fns"
-    },
-    {
-      "source": "src/routes/_authenticated/ranking.tsx",
-      "target": "react"
-    },
-    {
-      "source": "src/routes/_authenticated/ranking.tsx",
       "target": "@/lib/utils"
     },
     {

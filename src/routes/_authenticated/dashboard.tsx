@@ -1,329 +1,237 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect } from "react";
-import { Trophy, CalendarCheck, Users, Banknote, CalendarClock, Target, Activity, Shield } from "lucide-react";
-import { useAllMeetings } from "@/lib/data";
-import { useMyRole, useAllSDRs, useBonusRules, calculateBonus } from "@/lib/bonus";
-import { format, isSameMonth, isToday } from "date-fns";
+import { useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import { ArrowUpRight, CalendarClock, Clock3, TrendingUp, UserRound } from "lucide-react";
+import { useAllMeetings, useClients } from "@/lib/data";
+import {
+  addDays,
+  endOfDay,
+  fmtTime,
+  relativeDayLabel,
+  startOfDay,
+  startOfWeek,
+  isSameDay,
+  format,
+} from "@/lib/dates";
+import { L } from "@/lib/dates";
+import { StatusBadge } from "@/components/StatusBadge";
+import { MeetingDialog } from "@/components/MeetingDialog";
+import type { MeetingWithClient } from "@/lib/domain";
 import { cn } from "@/lib/utils";
-import { Progress } from "@/components/ui/progress";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard — Pixel Graphics" },
-      { name: "description", content: "Visão geral de desempenho e acompanhamento em tempo real." },
+      { title: "Painel — Orbit" },
+      { name: "description", content: "Visão geral da semana: reuniões de hoje, próximos compromissos e clientes aguardando contato." },
+      { property: "og:title", content: "Painel — Orbit" },
+      { property: "og:description", content: "Visão geral da semana de prospecção." },
     ],
   }),
   component: Dashboard,
 });
 
 function Dashboard() {
-  const qc = useQueryClient();
-  const { data: role, isLoading: roleLoading } = useMyRole();
-  const { data: user } = useQuery({
-    queryKey: ["auth_user"],
-    queryFn: async () => (await supabase.auth.getUser()).data.user,
-  });
-
   const { data: meetings } = useAllMeetings();
-  const { data: sdrs } = useAllSDRs();
-  const { data: rules } = useBonusRules();
+  const { data: clients } = useClients();
+  const [selected, setSelected] = useState<MeetingWithClient | null>(null);
 
-  const { data: prospects } = useQuery({
-    queryKey: ["prospects_all"],
-    queryFn: async () => {
-      const { data } = await supabase.from("prospects").select("*");
-      return data || [];
-    },
-  });
-
-  const { data: history } = useQuery({
-    queryKey: ["history_events_recent"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("history_events")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(40);
-      return data || [];
-    },
-  });
-
-  const { data: profiles } = useQuery({
-    queryKey: ["profiles_all"],
-    queryFn: async () => {
-      const { data } = await supabase.from("profiles").select("id, full_name");
-      return data || [];
-    },
-  });
-
-  // Invalidate queries in real-time for immediate feedback
-  useEffect(() => {
-    const sub = supabase
-      .channel("dashboard_realtime")
-      .on("postgres_changes", { event: "*", schema: "public", table: "prospects" }, () => {
-        qc.invalidateQueries({ queryKey: ["prospects_all"] });
-      })
-      .on("postgres_changes", { event: "*", schema: "public", table: "history_events" }, () => {
-        qc.invalidateQueries({ queryKey: ["history_events_recent"] });
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(sub);
-    };
-  }, [qc]);
-
-  if (roleLoading) {
-    return <div className="p-8 text-center text-sm text-muted-foreground">Carregando painel...</div>;
-  }
-
-  if (role === "sdr") {
-    return (
-      <SDRDashboard 
-        userId={user?.id}
-        meetings={meetings} 
-        prospects={prospects}
-        rules={rules}
-      />
-    );
-  }
-
-  return (
-    <AdminDashboard 
-      meetings={meetings} 
-      prospects={prospects} 
-      history={history} 
-      profiles={profiles}
-      sdrs={sdrs}
-      rules={rules}
-    />
-  );
-}
-
-// -----------------------------------------------------------------------------
-// SDR DASHBOARD
-// -----------------------------------------------------------------------------
-function SDRDashboard({ userId, meetings, prospects, rules }: any) {
   const now = new Date();
-  
-  const myMeetings = (meetings || []).filter((m: any) => m.user_id === userId);
-  const myProspects = (prospects || []).filter((p: any) => p.user_id === userId);
-  
-  const thisMonthMeetings = myMeetings.filter((m: any) => isSameMonth(new Date(m.starts_at), now));
-  
-  const prospectsAbordados = myProspects.filter((p: any) => p.status_funnel !== 'Novo').length;
-  const respostas = myProspects.filter((p: any) => ['Respondeu', 'Em negociação', 'Reunião marcada', 'Reunião realizada', 'Proposta enviada', 'Fechado'].includes(p.status_funnel)).length;
-  const propostas = myProspects.filter((p: any) => p.status_funnel === 'Proposta enviada').length;
-  const vendas = myProspects.filter((p: any) => p.status_funnel === 'Fechado').length;
-  
-  const marcadas = thisMonthMeetings.length;
-  const realizadas = thisMonthMeetings.filter((m: any) => m.status === 'realizada').length;
-  const qualificadas = thisMonthMeetings.filter((m: any) => m.qualified === true).length;
-  
-  const { bonus, nextGoal, missing, isMax } = calculateBonus(qualificadas, rules || []);
-  const progressValue = nextGoal ? (qualificadas / nextGoal) * 100 : 0;
-  
-  return (
-    <div className="mx-auto w-full max-w-[1000px] px-4 py-8 sm:px-6">
-      <h1 className="text-2xl font-medium mb-6">Meu Desempenho</h1>
-      
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard label="Prospects Abordados" value={prospectsAbordados} icon={Users} />
-        <StatCard label="Respostas" value={respostas} icon={Activity} />
-        <StatCard label="Reuniões Marcadas" value={marcadas} icon={CalendarCheck} />
-        <StatCard label="Realizadas" value={realizadas} icon={CalendarClock} />
-        <StatCard label="Propostas" value={propostas} icon={Target} />
-        <StatCard label="Vendas" value={vendas} icon={Trophy} tone="success" />
-        <StatCard label="Reuniões Qualificadas" value={qualificadas} icon={CalendarCheck} tone="accent" />
-        <StatCard label="Bônus Atual" value={new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(bonus)} icon={Banknote} tone="success" />
-      </div>
+  const list = meetings ?? [];
 
-      <div className="panel p-6 mb-8">
-        <h2 className="text-lg font-medium mb-2">Progresso da Bonificação</h2>
-        {isMax ? (
-          <p className="text-sm text-success font-medium">Parabéns! Você atingiu a faixa máxima de bônus.</p>
-        ) : (
-          <>
-            <p className="text-sm text-muted-foreground mb-4">
-              Faltam <strong className="text-foreground">{missing}</strong> reuniões para chegar ao próximo bônus de <strong>R$ {rules?.find((r: any) => r.min_meetings === nextGoal)?.bonus_amount || 0}</strong>.
-            </p>
-            <Progress value={progressValue} className="h-3 rounded-full bg-muted" />
-            <div className="flex justify-between text-xs text-muted-foreground mt-2">
-              <span>{qualificadas} qualificadas</span>
-              <span>Meta: {nextGoal}</span>
-            </div>
-          </>
-        )}
-      </div>
-    </div>
+  const today = list.filter((m) => isSameDay(new Date(m.starts_at), now));
+  const weekStart = startOfWeek(now, { weekStartsOn: 1 });
+  const week = list.filter((m) => {
+    const d = new Date(m.starts_at);
+    return d >= weekStart && d < addDays(weekStart, 7);
+  });
+  const upcoming = list
+    .filter((m) => new Date(m.starts_at) >= now && m.status !== "cancelada")
+    .sort((a, b) => +new Date(a.starts_at) - +new Date(b.starts_at));
+  const waiting = (clients ?? []).filter((c) => c.status === "aguardando");
+  const overdue = list.filter(
+    (m) => new Date(m.starts_at) < startOfDay(now) && ["agendada", "confirmada"].includes(m.status),
   );
-}
+  const done = list.filter((m) => m.status === "realizada").length;
+  const past = list.filter((m) => new Date(m.starts_at) < now).length;
+  const attendance = past ? Math.round((done / past) * 100) : 0;
 
-// -----------------------------------------------------------------------------
-// ADMIN DASHBOARD
-// -----------------------------------------------------------------------------
-function AdminDashboard({ meetings, prospects, history, profiles, sdrs, rules }: any) {
-  const now = new Date();
-  
-  const allMeetings = meetings || [];
-  const allProspects = prospects || [];
-  
-  const thisMonthMeetings = allMeetings.filter((m: any) => isSameMonth(new Date(m.starts_at), now));
-  
-  const prospectsHoje = allProspects.filter((p: any) => isToday(new Date(p.created_at))).length;
-  const prospectsAbordados = allProspects.filter((p: any) => p.status_funnel && p.status_funnel !== 'Novo').length;
-  const respostas = allProspects.filter((p: any) => ['Respondeu', 'Em negociação', 'Reunião marcada', 'Reunião realizada', 'Proposta enviada', 'Fechado'].includes(p.status_funnel)).length;
-  
-  const marcadas = thisMonthMeetings.length;
-  const realizadas = thisMonthMeetings.filter((m: any) => m.status === 'realizada').length;
-  const pendentes = thisMonthMeetings.filter((m: any) => m.status === 'agendada' || m.status === 'confirmada').length;
-  
-  let totalBonus = 0;
-  const sdrMap = new Map();
-  const qualificadasThisMonth = thisMonthMeetings.filter((m: any) => m.qualified === true);
-  for (const m of qualificadasThisMonth) {
-    sdrMap.set(m.user_id, (sdrMap.get(m.user_id) || 0) + 1);
-  }
-  for (const sdr of sdrs || []) {
-    if (sdr.active) {
-      const { bonus } = calculateBonus(sdrMap.get(sdr.user_id) || 0, rules || []);
-      totalBonus += bonus;
-    }
-  }
-
-  function getProfileName(id: string) {
-    return profiles?.find((p: any) => p.id === id)?.full_name || "Membro";
-  }
+  const days = useMemo(
+    () => Array.from({ length: 7 }, (_, i) => addDays(weekStart, i)),
+    [weekStart.getTime()],
+  );
 
   return (
-    <div className="mx-auto w-full max-w-[1180px] px-4 py-8 sm:px-6">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-medium mb-2">Dashboard Geral</h1>
-          <p className="text-sm text-muted-foreground">Acompanhamento em tempo real da equipe.</p>
-        </div>
-        <Link 
-          to="/admin" 
-          className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-foreground shadow-sm hover:bg-accent/90"
-        >
-          <Shield className="size-4" />
-          Administração
-        </Link>
-      </div>
-      
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard label="Prospects Hoje" value={prospectsHoje} icon={Target} />
-        <StatCard label="Prospects Abordados" value={prospectsAbordados} icon={Users} />
-        <StatCard label="Respostas" value={respostas} icon={Activity} />
-        <StatCard label="Reuniões Marcadas" value={marcadas} icon={CalendarCheck} />
-        <StatCard label="Reuniões Realizadas" value={realizadas} icon={CalendarClock} />
-        <StatCard label="Reuniões Pendentes" value={pendentes} icon={CalendarClock} />
-        <StatCard label="Bônus Atual Equipe" value={new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(totalBonus)} icon={Banknote} tone="success" />
+    <div className="mx-auto w-full max-w-[1180px] px-4 py-8 sm:px-6 lg:py-12">
+      <motion.header
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <p className="text-eyebrow">{format(now, "EEEE, d 'de' MMMM", L)}</p>
+        <h1 className="mt-2 text-2xl font-medium">Painel</h1>
+      </motion.header>
+
+      <div className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border md:grid-cols-3 xl:grid-cols-6">
+        <Stat label="Hoje" value={today.length} hint="reuniões" />
+        <Stat label="Semana" value={week.length} hint="reuniões" />
+        <Stat
+          label="Próxima"
+          value={upcoming[0] ? fmtTime(upcoming[0].starts_at) : "—"}
+          hint={upcoming[0] ? (upcoming[0].client?.name ?? "") : "sem agenda"}
+        />
+        <Stat label="Aguardando" value={waiting.length} hint="clientes" />
+        <Stat label="Atrasados" value={overdue.length} hint="sem desfecho" tone={overdue.length ? "warn" : undefined} />
+        <Stat label="Comparecimento" value={`${attendance}%`} hint="realizadas" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
-          <h2 className="text-[15px] font-medium mb-4">Acompanhamento em Tempo Real (SDRs)</h2>
-          <div className="panel overflow-hidden">
-             <table className="w-full text-left text-[13px]">
-              <thead className="bg-muted/30 border-b border-border">
-                <tr>
-                  <th className="py-3 px-4 font-medium text-muted-foreground">SDR</th>
-                  <th className="py-3 px-4 font-medium text-muted-foreground">Abordados</th>
-                  <th className="py-3 px-4 font-medium text-muted-foreground">Respostas</th>
-                  <th className="py-3 px-4 font-medium text-muted-foreground">Marcadas</th>
-                  <th className="py-3 px-4 font-medium text-muted-foreground">Realizadas</th>
-                  <th className="py-3 px-4 font-medium text-muted-foreground">Conversões</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {(sdrs || []).filter((s: any) => s.active).map((sdr: any) => {
-                  const sdrId = sdr.user_id;
-                  const sdrName = getProfileName(sdrId);
-                  const sdrProspects = allProspects.filter((p: any) => p.user_id === sdrId);
-                  const sdrMeetings = thisMonthMeetings.filter((m: any) => m.user_id === sdrId);
-                  
-                  const sAbordados = sdrProspects.filter((p: any) => p.status_funnel !== 'Novo').length;
-                  const sRespostas = sdrProspects.filter((p: any) => ['Respondeu', 'Em negociação', 'Reunião marcada', 'Reunião realizada', 'Proposta enviada', 'Fechado'].includes(p.status_funnel)).length;
-                  const sMarcadas = sdrMeetings.length;
-                  const sRealizadas = sdrMeetings.filter((m: any) => m.status === 'realizada').length;
-                  const sConversoes = sdrProspects.filter((p: any) => p.status_funnel === 'Fechado').length;
-
-                  return (
-                    <tr key={sdrId} className="row-hover">
-                      <td className="py-3 px-4 font-medium">{sdrName}</td>
-                      <td className="py-3 px-4 tabular">{sAbordados}</td>
-                      <td className="py-3 px-4 tabular">{sRespostas}</td>
-                      <td className="py-3 px-4 tabular">{sMarcadas}</td>
-                      <td className="py-3 px-4 tabular">{sRealizadas}</td>
-                      <td className="py-3 px-4 tabular text-success font-medium">{sConversoes}</td>
-                    </tr>
-                  )
-                })}
-                {(!sdrs || sdrs.filter((s: any) => s.active).length === 0) && (
-                  <tr>
-                    <td colSpan={6} className="py-8 text-center text-xs text-muted-foreground">
-                      Nenhum SDR ativo encontrado.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+      <div className="mt-8 grid gap-6 lg:grid-cols-[1.25fr_1fr]">
+        <section className="panel overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-3.5 hairline">
+            <h2 className="text-[13px] font-medium">Semana</h2>
+            <Link to="/calendario" className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground">
+              Calendário <ArrowUpRight className="size-3" />
+            </Link>
           </div>
-        </div>
-
-        <div>
-          <h2 className="text-[15px] font-medium mb-4">Atividades Recentes</h2>
-          <div className="panel p-0 overflow-hidden flex flex-col">
-            <div className="max-h-[400px] overflow-y-auto p-4 space-y-4">
-              {(history || []).map((event: any) => (
-                <div key={event.id} className="flex gap-3 text-sm">
-                  <div className="mt-0.5 shrink-0">
-                    <div className="size-2 rounded-full bg-primary/80 ring-4 ring-primary/10" />
+          <div className="grid grid-cols-7">
+            {days.map((day) => {
+              const items = list.filter((m) => isSameDay(new Date(m.starts_at), day));
+              const isToday = isSameDay(day, now);
+              return (
+                <div key={day.toISOString()} className="min-h-[168px] border-r border-border p-2 last:border-r-0">
+                  <div className="mb-2 flex items-baseline gap-1.5 px-1">
+                    <span className="text-[10px] uppercase text-muted-foreground">{format(day, "EEEEEE", L)}</span>
+                    <span
+                      className={cn(
+                        "tabular text-xs",
+                        isToday ? "font-semibold text-accent" : "text-foreground",
+                      )}
+                    >
+                      {format(day, "d")}
+                    </span>
                   </div>
-                  <div>
-                    <p className="text-foreground leading-tight">
-                      <span className="font-medium">{getProfileName(event.user_id)}</span>{" "}
-                      <span className="text-muted-foreground">{event.description || event.event_type}</span>
-                    </p>
-                    <p className="text-[11px] text-muted-foreground mt-1">
-                      {format(new Date(event.created_at), "dd/MM HH:mm")}
-                    </p>
+                  <div className="space-y-1">
+                    {items.slice(0, 4).map((m) => (
+                      <button
+                        key={m.id}
+                        onClick={() => setSelected(m)}
+                        className="block w-full truncate rounded border border-border bg-elevated px-1.5 py-1 text-left text-[10px] leading-tight transition-colors hover:border-border-strong"
+                      >
+                        <span className="tabular text-muted-foreground">{fmtTime(m.starts_at)}</span>{" "}
+                        {m.client?.name ?? m.title}
+                      </button>
+                    ))}
+                    {items.length > 4 && (
+                      <p className="px-1 text-[10px] text-muted-foreground">+{items.length - 4}</p>
+                    )}
                   </div>
                 </div>
-              ))}
-              {(!history || history.length === 0) && (
-                <p className="text-xs text-muted-foreground text-center py-4">Nenhuma atividade recente.</p>
-              )}
-            </div>
+              );
+            })}
           </div>
-        </div>
+        </section>
+
+        <section className="panel overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-3.5 hairline">
+            <h2 className="text-[13px] font-medium">Próximas reuniões</h2>
+            <Link to="/agenda" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
+              Ver agenda
+            </Link>
+          </div>
+          <div className="divide-y divide-border">
+            {upcoming.slice(0, 6).map((m) => (
+              <button
+                key={m.id}
+                onClick={() => setSelected(m)}
+                className="row-hover flex w-full items-center gap-3 px-5 py-3 text-left"
+              >
+                <div className="tabular w-12 shrink-0 text-[13px] text-muted-foreground">{fmtTime(m.starts_at)}</div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[13px]">{m.client?.name ?? m.title}</p>
+                  <p className="truncate text-[11px] text-muted-foreground">
+                    {relativeDayLabel(m.starts_at)}
+                    {m.client?.company ? ` · ${m.client.company}` : ""}
+                  </p>
+                </div>
+                <StatusBadge status={m.status} />
+              </button>
+            ))}
+            {upcoming.length === 0 && (
+              <Empty icon={CalendarClock} text="Nenhuma reunião futura agendada." />
+            )}
+          </div>
+        </section>
       </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <section className="panel overflow-hidden">
+          <div className="px-5 py-3.5 hairline">
+            <h2 className="text-[13px] font-medium">Hoje</h2>
+          </div>
+          <div className="divide-y divide-border">
+            {today.map((m) => (
+              <button key={m.id} onClick={() => setSelected(m)} className="row-hover flex w-full items-center gap-3 px-5 py-3 text-left">
+                <span className="tabular w-12 text-[13px] text-muted-foreground">{fmtTime(m.starts_at)}</span>
+                <span className="min-w-0 flex-1 truncate text-[13px]">{m.client?.name ?? m.title}</span>
+                <StatusBadge status={m.status} />
+              </button>
+            ))}
+            {today.length === 0 && <Empty icon={Clock3} text="Dia livre." />}
+          </div>
+        </section>
+
+        <section className="panel overflow-hidden">
+          <div className="px-5 py-3.5 hairline">
+            <h2 className="text-[13px] font-medium">Clientes aguardando contato</h2>
+          </div>
+          <div className="divide-y divide-border">
+            {waiting.slice(0, 6).map((c) => (
+              <Link
+                key={c.id}
+                to="/clientes/$clientId"
+                params={{ clientId: c.id }}
+                className="row-hover flex items-center gap-3 px-5 py-3"
+              >
+                <UserRound className="size-3.5 text-muted-foreground" />
+                <span className="min-w-0 flex-1 truncate text-[13px]">{c.name}</span>
+                <span className="truncate text-[11px] text-muted-foreground">{c.company ?? c.phone ?? ""}</span>
+              </Link>
+            ))}
+            {waiting.length === 0 && <Empty icon={TrendingUp} text="Nenhum cliente na fila." />}
+          </div>
+        </section>
+      </div>
+
+      <MeetingDialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)} meeting={selected} />
     </div>
   );
 }
 
-// -----------------------------------------------------------------------------
-// UTILS
-// -----------------------------------------------------------------------------
-function StatCard({ label, value, icon: Icon, tone }: { label: string; value: string | number; icon: any; tone?: "success" | "accent" }) {
+function Stat({
+  label,
+  value,
+  hint,
+  tone,
+}: {
+  label: string;
+  value: string | number;
+  hint?: string;
+  tone?: "warn";
+}) {
   return (
-    <div className="panel flex flex-col p-5">
-      <div className="flex items-center gap-3">
-        <div className={cn(
-          "grid size-10 place-items-center rounded-lg border",
-          tone === "success" ? "border-success/30 bg-success/10 text-success"
-          : tone === "accent" ? "border-accent/30 bg-accent/10 text-accent"
-          : "border-border bg-elevated text-muted-foreground"
-        )}>
-          <Icon className="size-5" />
-        </div>
-        <p className="text-[13px] font-medium text-muted-foreground leading-tight">{label}</p>
-      </div>
-      <p className="mt-4 tabular text-3xl font-medium tracking-tight">{value}</p>
+    <div className="bg-surface px-4 py-4 transition-colors duration-200 hover:bg-elevated">
+      <p className="text-[11px] text-muted-foreground">{label}</p>
+      <p className={cn("tabular mt-1.5 text-xl font-medium", tone === "warn" && "text-warning")}>{value}</p>
+      {hint && <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{hint}</p>}
+    </div>
+  );
+}
+
+function Empty({ icon: Icon, text }: { icon: React.ElementType; text: string }) {
+  return (
+    <div className="flex flex-col items-center gap-2 px-5 py-10 text-center">
+      <Icon className="size-4 text-muted-foreground" />
+      <p className="text-xs text-muted-foreground">{text}</p>
     </div>
   );
 }
