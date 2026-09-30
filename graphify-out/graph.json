@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T13:56:54.733167+00:00",
+  "generated_at": "2026-09-30T14:10:45.079577+00:00",
   "files": [
     {
       "path": "package-lock.json",
@@ -191,7 +191,7 @@
     },
     {
       "path": "src/routes/index.tsx",
-      "bytes": 364
+      "bytes": 225
     },
     {
       "path": "src/hooks/use-mobile.tsx",
@@ -435,7 +435,7 @@
     },
     {
       "path": "src/routes/_authenticated/route.tsx",
-      "bytes": 522
+      "bytes": 594
     },
     {
       "path": "src/routes/_authenticated/dashboard.tsx",
@@ -1062,10 +1062,6 @@
     {
       "source": "src/routes/index.tsx",
       "target": "@tanstack/react-router"
-    },
-    {
-      "source": "src/routes/index.tsx",
-      "target": "@/integrations/supabase/client"
     },
     {
       "source": "src/hooks/use-mobile.tsx",
